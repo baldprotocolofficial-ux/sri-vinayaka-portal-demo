@@ -1,0 +1,1120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Demo of the Sri Vinayaka Wood Industries operations portal – leads, quotations, orders, workshop, stock, billing and payroll.">
+<meta name="theme-color" content="#1D2840">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='10' fill='%231D2840'/%3E%3Cpath d='M27 12c-2-2-5-3-8-2-4 1-5 5-2 7l6 3c3 2 2 6-2 7-3 1-6 0-8-2' fill='none' stroke='%23fff' stroke-width='3.4' stroke-linecap='round'/%3E%3C/svg%3E">
+<title>Sri Vinayaka Operations Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@0.454.0/dist/umd/lucide.min.js"></script>
+<style>
+:root{
+  --side:#1D2840;--side2:#2A3754;--side-ink:#C7D0E3;--side-mute:#8592AD;
+  --bg:#EDF0F7;--card:#fff;--ink:#1E2433;--ink2:#3B4256;--muted:#6B7385;--line:#E3E7EF;--line2:#F2F4F9;
+  --pri:#2F5BEA;--pri-d:#2447C5;--pri-s:#E9EFFF;
+  --green:#16A34A;--green-s:#E5F6EC;--red:#DC2626;--red-s:#FDECEC;--amber:#D97706;--amber-s:#FEF3E2;
+  --violet:#7C3AED;--violet-s:#F1EAFF;--teal:#0D9488;--teal-s:#E3F5F3;--gray-s:#EEF0F4;
+  --r:12px;--shadow:0 1px 2px rgba(20,30,60,.04),0 2px 8px rgba(20,30,60,.04);
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink);font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+svg.lucide{width:18px;height:18px;stroke-width:2;flex:none}
+a{color:inherit;text-decoration:none}
+
+/* ===== layout ===== */
+.app{display:grid;grid-template-columns:248px 1fr;min-height:100vh}
+.side{background:var(--side);color:var(--side-ink);position:sticky;top:0;height:100vh;overflow-y:auto;display:flex;flex-direction:column;scrollbar-width:thin;scrollbar-color:#3a4766 transparent}
+.logo{display:flex;align-items:center;gap:10px;padding:18px 18px 14px}
+.logo b{color:#fff;font-size:15px;font-weight:800;letter-spacing:.2px}
+.logo small{display:block;color:var(--side-mute);font-size:11px;font-weight:500}
+.sfind{margin:4px 14px 10px;position:relative}
+.sfind input{width:100%;height:36px;border-radius:9px;border:1px solid #33405e;background:#17213A;color:#fff;padding:0 10px 0 34px;outline:none;font-size:13px}
+.sfind input::placeholder{color:var(--side-mute)}
+.sfind svg{position:absolute;left:10px;top:9px;color:var(--side-mute);width:16px;height:16px}
+.nav{padding:0 10px 16px;flex:1}
+.nav .grp{margin-top:6px}
+.nav .gh{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:9px;color:#fff;font-weight:600;font-size:13.5px;cursor:pointer;user-select:none}
+.nav .gh:hover{background:var(--side2)}
+.nav .gh .chev{margin-left:auto;width:15px;height:15px;color:var(--side-mute);transition:.15s}
+.nav .grp.closed .chev{transform:rotate(-90deg)}
+.nav .grp.closed .items{display:none}
+.nav a{display:flex;align-items:center;gap:10px;padding:8px 10px 8px 14px;border-radius:9px;font-size:13.5px;font-weight:500;color:var(--side-ink);margin:1px 0}
+.nav a:hover{background:var(--side2);color:#fff}
+.nav a.on{background:#34436A;color:#fff;font-weight:600}
+.nav a .cnt{margin-left:auto;background:#E5484D;color:#fff;font-size:10.5px;border-radius:20px;padding:1px 7px;font-weight:700}
+.nav a.top{padding-left:10px;color:#fff;font-weight:600}
+.ico{width:26px;height:26px;border-radius:7px;display:grid;place-items:center;flex:none}
+.ico svg{width:15px;height:15px}
+.side-foot{margin:10px 14px 16px;padding:12px;border-radius:12px;background:#253150;font-size:12px;color:var(--side-ink)}
+.side-foot b{color:#fff;display:block;margin-bottom:3px}
+
+.main{min-width:0;display:flex;flex-direction:column}
+.top{position:sticky;top:0;z-index:20;background:rgba(237,240,247,.92);backdrop-filter:blur(8px);height:64px;display:flex;align-items:center;gap:12px;padding:0 28px}
+.top .burger{display:none}
+.gsearch{flex:1;max-width:460px;position:relative}
+.gsearch input{width:100%;height:40px;border:1px solid var(--line);background:#fff;border-radius:10px;padding:0 14px 0 40px;outline:none}
+.gsearch input:focus{border-color:var(--pri);box-shadow:0 0 0 3px var(--pri-s)}
+.gsearch>svg{position:absolute;left:13px;top:11px;color:var(--muted)}
+.sres{position:absolute;top:46px;left:0;right:0;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 18px 40px rgba(20,30,60,.14);padding:6px;display:none;max-height:360px;overflow:auto}
+.sres.show{display:block}
+.sres .r{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;cursor:pointer}
+.sres .r:hover{background:var(--line2)}
+.top .sp{flex:1}
+.ibtn{width:40px;height:40px;border-radius:10px;border:1px solid var(--line);background:#fff;display:grid;place-items:center;cursor:pointer;position:relative}
+.ibtn:hover{background:var(--line2)}
+.ibtn .dot{position:absolute;top:-5px;right:-5px;background:#E5484D;color:#fff;font-size:10px;font-weight:700;border-radius:20px;min-width:18px;height:18px;display:grid;place-items:center;border:2px solid var(--bg)}
+.dd{position:absolute;right:0;top:48px;min-width:240px;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 18px 40px rgba(20,30,60,.14);padding:6px;display:none;z-index:30}
+.dd.show{display:block}
+.dd .di{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;cursor:pointer;font-weight:500}
+.dd .di:hover{background:var(--line2)}
+.dd h6{margin:6px 10px;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px}
+.me{display:flex;align-items:center;gap:10px;cursor:pointer;padding:4px 6px 4px 4px;border-radius:12px;position:relative}
+.me:hover{background:#fff}
+.me b{font-size:13px;display:block}
+.me small{font-size:11.5px;color:var(--muted)}
+
+.view{padding:8px 28px 40px;max-width:1400px;width:100%;margin:0 auto}
+.ph{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin:10px 0 20px;flex-wrap:wrap}
+.ph h1{margin:0;font-size:24px;font-weight:800;letter-spacing:-.3px;display:flex;align-items:center;gap:10px}
+.ph p{margin:4px 0 0;color:var(--muted);max-width:640px}
+.ph .acts{display:flex;gap:8px;flex-wrap:wrap}
+.crumb{font-size:12.5px;color:var(--muted);margin-top:8px;display:flex;gap:6px;align-items:center}
+.crumb a{color:var(--pri);font-weight:600}
+
+/* ===== atoms ===== */
+.btn{display:inline-flex;align-items:center;gap:7px;height:38px;padding:0 15px;border-radius:9px;border:1px solid var(--line);background:#fff;font-weight:600;font-size:13px;cursor:pointer;white-space:nowrap;transition:.12s}
+.btn:hover{background:var(--line2)}
+.btn.pri{background:var(--pri);border-color:var(--pri);color:#fff}
+.btn.pri:hover{background:var(--pri-d)}
+.btn.green{background:var(--green);border-color:var(--green);color:#fff}
+.btn.red{background:#fff;border-color:#F5C2C2;color:var(--red)}
+.btn.red:hover{background:var(--red-s)}
+.btn.sm{height:31px;padding:0 11px;font-size:12.5px;border-radius:8px}
+.btn.ghost{border-color:transparent;background:transparent}
+.btn.ghost:hover{background:var(--line2)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn svg{width:16px;height:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)}
+.card-h{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:15px 18px 0}
+.card-h h3{margin:0;font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px}
+.card-h .sub{color:var(--muted);font-size:12.5px;font-weight:500}
+.card-b{padding:16px 18px}
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.g-2-1{grid-template-columns:minmax(0,1.6fr) minmax(0,1fr)}
+.g-1-2{grid-template-columns:minmax(0,1fr) minmax(0,1.6fr)}
+.mb{margin-bottom:16px}
+.pill{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600;white-space:nowrap}
+.p-blue{background:var(--pri-s);color:var(--pri)} .p-green{background:var(--green-s);color:var(--green)} .p-red{background:var(--red-s);color:var(--red)}
+.p-amber{background:var(--amber-s);color:var(--amber)} .p-violet{background:var(--violet-s);color:var(--violet)} .p-teal{background:var(--teal-s);color:var(--teal)} .p-gray{background:var(--gray-s);color:var(--ink2)}
+.code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;font-weight:600;color:var(--ink2)}
+.link{color:var(--pri);font-weight:600;cursor:pointer}
+.link:hover{text-decoration:underline}
+.muted{color:var(--muted)} .small{font-size:12.5px}
+.right{text-align:right} .tnum{font-variant-numeric:tabular-nums}
+.c-green{color:var(--green)} .c-red{color:var(--red)} .c-amber{color:var(--amber)} .b{font-weight:700}
+.av{width:32px;height:32px;border-radius:50%;display:inline-grid;place-items:center;color:#fff;font-weight:700;font-size:12px;flex:none}
+.av.lg{width:52px;height:52px;font-size:18px}
+.who{display:flex;align-items:center;gap:10px}
+.who b{display:block;font-weight:600}
+.who small{color:var(--muted);font-size:12px}
+.help{display:flex;gap:10px;align-items:flex-start;background:var(--pri-s);color:#1E3A8A;border-radius:10px;padding:11px 14px;font-size:13px;margin-bottom:16px}
+.help svg{color:var(--pri);margin-top:1px}
+.warn{background:var(--amber-s);color:#92400E}.warn svg{color:var(--amber)}
+.bad{background:var(--red-s);color:#991B1B}.bad svg{color:var(--red)}
+.good{background:var(--green-s);color:#14532D}.good svg{color:var(--green)}
+
+/* tabs / seg */
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);margin-bottom:16px;overflow-x:auto}
+.tabs button{border:0;background:none;padding:10px 14px;font-weight:600;font-size:13.5px;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap}
+.tabs button.on{color:var(--pri);border-color:var(--pri)}
+.seg{display:inline-flex;background:#fff;border:1px solid var(--line);border-radius:9px;padding:3px;gap:2px}
+.seg button{border:0;background:none;padding:6px 12px;border-radius:7px;font-weight:600;font-size:12.5px;color:var(--muted);cursor:pointer;white-space:nowrap}
+.seg button.on{background:var(--pri-s);color:var(--pri)}
+
+/* filters / table */
+.bar{display:flex;gap:10px;flex-wrap:wrap;padding:14px 16px;border-bottom:1px solid var(--line2);align-items:center}
+.fsearch{position:relative;flex:1;min-width:200px}
+.fsearch input{width:100%;padding-left:36px}
+.fsearch svg{position:absolute;left:11px;top:11px;color:var(--muted);width:16px;height:16px}
+.inp,.sel{height:38px;border:1px solid var(--line);border-radius:9px;padding:0 11px;background:#fff;outline:none;min-width:0}
+.inp:focus,.sel:focus,textarea.inp:focus{border-color:var(--pri);box-shadow:0 0 0 3px var(--pri-s)}
+textarea.inp{height:auto;padding:9px 11px;resize:vertical}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+th{font-size:12px;color:var(--muted);font-weight:600;text-align:left;padding:11px 16px;border-bottom:1px solid var(--line);white-space:nowrap;background:#FAFBFD}
+td{padding:12px 16px;border-bottom:1px solid var(--line2);white-space:nowrap;vertical-align:middle}
+tbody tr:hover{background:#F8FAFE}
+tbody tr:last-child td{border-bottom:0}
+tr.click{cursor:pointer}
+td.wrap{white-space:normal;min-width:220px}
+.tfoot{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-top:1px solid var(--line2);color:var(--muted);font-size:12.5px}
+.empty{padding:36px 20px;text-align:center;color:var(--muted)}
+.empty svg{width:34px;height:34px;color:#B8C0D2;margin-bottom:6px}
+
+/* dashboard */
+.welcome{display:flex;align-items:center;gap:16px;padding:20px}
+.welcome .hi{font-size:12.5px;color:var(--muted)}
+.welcome h2{margin:2px 0 0;font-size:20px;font-weight:700}
+.welcome .stat{margin-left:auto;text-align:right}
+.welcome .stat .v{font-size:24px;font-weight:800}
+.kpi{padding:16px 18px;cursor:pointer;transition:.12s}
+.kpi:hover{box-shadow:0 8px 24px rgba(20,30,60,.08)}
+.kpi .l{font-size:13px;color:var(--ink2);font-weight:500}
+.kpi .v{font-size:23px;font-weight:800;margin:6px 0 4px;letter-spacing:-.3px}
+.kpi .s{font-size:12px;color:var(--muted);display:flex;gap:6px;align-items:center}
+.up{color:var(--green);font-weight:700}
+.target .tr{height:30px;background:#EEF0F4;border-radius:6px;overflow:hidden;margin-top:12px;position:relative}
+.target .tr i{position:absolute;inset:0 auto 0 0;background:#B7E4C7;border-right:3px solid #1E2433}
+.target .tr span{position:absolute;left:10px;top:6px;font-weight:700;font-size:13px}
+.tasks td{padding:11px 18px}
+.tasks td:first-child{white-space:normal;min-width:200px}
+.welcome{flex-wrap:wrap}
+.funnel .row{display:grid;grid-template-columns:96px 1fr 40px;align-items:center;gap:12px;margin-bottom:12px;font-size:13px;font-weight:600;color:var(--ink2)}
+.funnel .tr{height:26px;background:var(--line2);border-radius:6px;overflow:hidden}
+.funnel .tr i{display:block;height:100%;border-radius:6px;transition:width .4s}
+.donut-wrap{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.legend{display:flex;flex-direction:column;gap:8px;font-size:13px;flex:1;min-width:160px}
+.legend div{display:flex;align-items:center;gap:8px}
+.legend i{width:10px;height:10px;border-radius:3px}
+.legend b{margin-left:auto}
+.stagebar{display:flex;height:14px;border-radius:7px;overflow:hidden;background:var(--line2);margin:8px 0 14px}
+.stagebar i{display:block;height:100%}
+.steps5{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.s5{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px;position:relative;cursor:pointer}
+.s5:hover{border-color:var(--pri)}
+.s5 .n{width:26px;height:26px;border-radius:50%;background:var(--pri);color:#fff;font-weight:700;display:grid;place-items:center;font-size:13px;margin-bottom:8px}
+.s5 b{display:block;font-size:13.5px}
+.s5 small{color:var(--muted);font-size:12px}
+
+/* kanban */
+.kan{display:flex;gap:12px;overflow-x:auto;padding-bottom:8px}
+.kcol{min-width:270px;width:270px;flex:none;background:#E4E8F2;border-radius:12px;overflow:hidden}
+.kh{padding:12px 14px;border-top:4px solid}
+.kh .t{display:flex;align-items:center;gap:8px;font-weight:700;font-size:13.5px}
+.kh .t span{background:rgba(0,0,0,.12);border-radius:6px;padding:0 7px;font-size:12px}
+.kh .a{font-weight:800;font-size:14px;margin-top:3px}
+.kbody{padding:8px;display:flex;flex-direction:column;gap:8px;min-height:120px}
+.kc{background:#fff;border-radius:9px;padding:12px;box-shadow:0 1px 2px rgba(0,0,0,.05);cursor:pointer;border:1px solid transparent}
+.kc:hover{border-color:var(--pri)}
+.kc .t{font-weight:700;font-size:13.5px}
+.kc .m{font-size:12.5px;color:var(--muted);margin-top:2px}
+.kc .f{display:flex;justify-content:space-between;align-items:center;margin-top:10px}
+.ghost-row{height:10px;background:#EEF0F4;border-radius:6px;margin:6px 0}
+
+/* progress / steps */
+.prog{height:7px;background:var(--line2);border-radius:20px;overflow:hidden;min-width:80px}
+.prog i{display:block;height:100%;border-radius:20px;background:var(--pri)}
+.track{display:flex;gap:4px;flex-wrap:wrap}
+.track span{font-size:11.5px;font-weight:600;padding:4px 8px;border-radius:6px;background:var(--line2);color:var(--muted);display:inline-flex;align-items:center;gap:4px}
+.track span.done{background:var(--green-s);color:var(--green)}
+.track span.cur{background:var(--pri);color:#fff}
+.track svg{width:12px;height:12px}
+.dots{display:flex;gap:3px}
+.dots i{width:14px;height:6px;border-radius:3px;background:var(--line)}
+.dots i.d{background:var(--green)} .dots i.c{background:var(--pri)}
+
+/* forms */
+.form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.form.f3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.form .full{grid-column:1/-1}
+.fld label{display:block;font-size:12.5px;font-weight:600;color:var(--ink2);margin-bottom:5px}
+.fld label em{color:var(--red);font-style:normal}
+.fld .hint{font-size:11.5px;color:var(--muted);margin-top:4px}
+.fld .inp,.fld .sel{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.chips label{cursor:pointer}
+.chips input{display:none}
+.chips span{display:inline-flex;align-items:center;gap:6px;padding:7px 13px;border-radius:20px;border:1px solid var(--line);font-weight:500;font-size:13px;background:#fff}
+.chips input:checked+span{background:var(--pri);color:#fff;border-color:var(--pri)}
+.kv{display:grid;grid-template-columns:130px 1fr;gap:9px 12px;font-size:13.5px}
+.kv dt{color:var(--muted)} .kv dd{margin:0;font-weight:600}
+.check{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;cursor:pointer;font-weight:500}
+.check input{width:18px;height:18px;accent-color:var(--green)}
+.check:has(input:checked){background:var(--green-s);border-color:#B5E3C6}
+.sec{margin-bottom:22px}
+.sec>h4{margin:0 0 10px;font-size:13px;font-weight:700;color:var(--ink2);display:flex;align-items:center;gap:8px}
+.mini{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.mini div{border:1px solid var(--line);border-radius:10px;padding:12px}
+.mini small{display:block;color:var(--muted);font-size:12px}
+.mini b{font-size:17px}
+.lines .ln{display:grid;grid-template-columns:2fr 70px 110px 70px 110px 34px;gap:8px;align-items:center;margin-bottom:8px}
+.lines .hd{font-size:11.5px;color:var(--muted);font-weight:600}
+.lines .amt{text-align:right;font-weight:700}
+.totals{margin-left:auto;width:300px;font-size:13.5px}
+.totals div{display:flex;justify-content:space-between;padding:5px 0}
+.totals .gt{border-top:1px solid var(--line);margin-top:6px;padding-top:10px;font-size:16px;font-weight:800}
+
+/* attendance */
+.att{display:inline-flex;border:1px solid var(--line);border-radius:9px;overflow:hidden}
+.att button{border:0;background:#fff;padding:7px 12px;font-size:12.5px;font-weight:600;color:var(--muted);cursor:pointer;border-left:1px solid var(--line)}
+.att button:first-child{border-left:0}
+.att button.A{background:var(--red-s);color:var(--red)}
+.att button.H{background:var(--amber-s);color:var(--amber)}
+.att button.P{background:var(--green-s);color:var(--green)}
+.reg td{padding:6px 4px;text-align:center;font-size:11px}
+.reg td:first-child{text-align:left;padding-left:16px;font-size:13px}
+.reg i{display:inline-block;width:18px;height:18px;border-radius:5px;line-height:18px;font-style:normal;font-weight:700;font-size:10px}
+.reg i.P{background:var(--green-s);color:var(--green)} .reg i.H{background:var(--amber-s);color:var(--amber)} .reg i.A{background:var(--red-s);color:var(--red)} .reg i.S{background:var(--line2);color:#B8C0D2}
+
+/* team cards */
+.team{padding:16px}
+.team .top2{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.team .mem{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-top:1px solid var(--line2)}
+.team .foot{display:flex;gap:6px;margin-top:12px}
+
+/* stage master */
+.stg{display:flex;align-items:center;gap:10px;padding:11px 16px;border-top:1px solid var(--line2);flex-wrap:wrap}
+.stg:first-child{border-top:0}
+.stg.off{opacity:.55;background:repeating-linear-gradient(-45deg,#fff,#fff 8px,#FAFBFD 8px,#FAFBFD 16px)}
+.stg .acts{margin-left:auto;display:flex;gap:4px}
+.flow{display:flex;align-items:center;flex-wrap:wrap;gap:6px}
+.flow svg{width:14px;height:14px;color:var(--muted)}
+
+/* modal */
+.ov{position:fixed;inset:0;background:rgba(15,23,42,.45);z-index:50;display:none;align-items:center;justify-content:center;padding:20px}
+.ov.show{display:flex}
+.modal{background:#fff;border-radius:16px;width:100%;max-width:600px;max-height:calc(100vh - 40px);display:flex;flex-direction:column;box-shadow:0 30px 60px rgba(0,0,0,.25);animation:pop .16s ease}
+.modal.wide{max-width:980px}
+.ov.drawer{justify-content:flex-end;padding:0}
+.ov.drawer .modal{height:100vh;max-height:100vh;border-radius:16px 0 0 16px;max-width:820px;animation:slide .2s ease}
+@keyframes pop{from{transform:scale(.97);opacity:0}}
+@keyframes slide{from{transform:translateX(40px);opacity:0}}
+.m-h{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:16px 20px;border-bottom:1px solid var(--line)}
+.m-h h3{margin:0;font-size:17px;font-weight:700;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.m-b{padding:18px 20px;overflow-y:auto}
+.m-f{padding:12px 20px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;align-items:center}
+.timeline{border-left:2px solid var(--line);margin-left:6px;padding-left:16px}
+.timeline .ev{position:relative;margin-bottom:14px;font-size:13px}
+.timeline .ev:before{content:"";position:absolute;left:-22px;top:4px;width:10px;height:10px;border-radius:50%;background:#fff;border:2px solid var(--pri)}
+.timeline small{display:block;color:var(--muted);font-size:12px;margin-top:2px}
+
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(30px);background:#1E2433;color:#fff;padding:11px 16px;border-radius:11px;font-weight:500;display:flex;gap:10px;align-items:center;opacity:0;transition:.22s;z-index:99;pointer-events:none;max-width:90vw}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.matrix td,.matrix th{text-align:center}
+.matrix td:first-child,.matrix th:first-child{text-align:left}
+.matrix input{width:18px;height:18px;accent-color:var(--pri)}
+.imgph{width:42px;height:42px;border-radius:9px;background:linear-gradient(135deg,#F3E7D6,#E2C9A6);display:grid;place-items:center;color:#8A5A2B}
+.scrim{display:none}
+.pfoot{margin-top:auto;padding:18px 16px calc(18px + env(safe-area-inset-bottom,0px));text-align:center;font-size:12.5px;color:var(--muted);border-top:1px solid var(--line);background:#fff}
+.pfoot b{color:var(--ink);font-weight:700}
+html,body{overflow-x:hidden}
+.grid>*,.m-b>*,.main,.view>*{min-width:0}
+.modal{min-width:0;width:100%}
+.ov.drawer .modal{width:100%}
+.m-h h3{min-width:0}
+.kv dd{overflow-wrap:anywhere}
+@media (max-width:560px){
+  .welcome .stat{width:100%}
+  .ph h1{font-size:21px}
+  .ph .acts{width:100%}
+  .card-h{flex-wrap:wrap}
+  .bar .seg{max-width:100%;overflow-x:auto}
+  .m-b{padding:16px}
+  .m-h{padding:14px 16px}
+  .mini b{font-size:15px}
+  .top{gap:8px}
+  .top .btn.pri{padding:0 12px}
+  .ov:not(.drawer){padding:10px}
+}
+
+@media (max-width:1150px){.g4{grid-template-columns:repeat(2,1fr)}.g-2-1,.g-1-2,.g3{grid-template-columns:1fr}.steps5{grid-template-columns:repeat(3,1fr)}}
+@media (max-width:900px){
+  .app{grid-template-columns:1fr}
+  .side{position:fixed;left:0;top:0;z-index:40;width:270px;transform:translateX(-100%);transition:.2s}
+  body.navopen .side{transform:none}
+  body.navopen .scrim{display:block;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:39}
+  .top{padding:0 16px}.top .burger{display:grid}
+  .me div{display:none}
+  .view{padding:6px 16px 30px}
+  .g2,.form,.form.f3{grid-template-columns:1fr}
+  .mini{grid-template-columns:repeat(2,1fr)}
+  .lines .ln{grid-template-columns:1fr 1fr 1fr}
+  .lines .hd{display:none}
+  .steps5{grid-template-columns:repeat(2,1fr)}
+  .welcome{flex-wrap:wrap}.welcome .stat{margin-left:0;text-align:left}
+}
+@media (max-width:560px){.g4{grid-template-columns:1fr}.gsearch{display:none}.kv{grid-template-columns:110px 1fr}.totals{width:100%}}
+@media print{.side,.top,.ph .acts{display:none}.app{display:block}}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="side">
+    <div class="logo">
+      <svg width="36" height="36" viewBox="0 0 40 40"><rect width="40" height="40" rx="10" fill="#fff"/><path d="M27 12c-2-2-5-3-8-2-4 1-5 5-2 7l6 3c3 2 2 6-2 7-3 1-6 0-8-2" fill="none" stroke="#C8102E" stroke-width="3.4" stroke-linecap="round"/></svg>
+      <div><b>Sri Vinayaka</b><small>Operations Portal · <span style="color:#FBBF24;font-weight:700">DEMO</span></small></div>
+    </div>
+    <div class="sfind"><i data-lucide="search"></i><input placeholder="Find a menu…" oninput="UI.navQ=this.value;renderNav()"></div>
+    <nav class="nav" id="nav"></nav>
+    <div class="side-foot"><b>Need help?</b>Tap the <b style="display:inline">?</b> button at the top for a simple guide.</div>
+  </aside>
+  <div class="scrim" onclick="document.body.classList.remove('navopen')"></div>
+  <div class="main">
+    <header class="top">
+      <button class="ibtn burger" onclick="document.body.classList.toggle('navopen')"><i data-lucide="menu"></i></button>
+      <div class="gsearch"><i data-lucide="search"></i><input id="gs" placeholder="Search customer, mobile, order, job…" oninput="globalSearch(this.value)" onfocus="globalSearch(this.value)"><div class="sres" id="sres"></div></div>
+      <div class="sp"></div>
+      <div style="position:relative"><button class="btn pri" onclick="toggleDD(event,'ddNew')"><i data-lucide="plus"></i>Create</button>
+        <div class="dd" id="ddNew"></div></div>
+      <button class="ibtn" title="Help" onclick="showGuide()"><i data-lucide="circle-help"></i></button>
+      <div style="position:relative"><button class="ibtn" onclick="toggleDD(event,'ddBell')"><i data-lucide="bell"></i><span class="dot" id="ndot"></span></button><div class="dd" id="ddBell" style="width:340px"></div></div>
+      <div class="me" onclick="toggleDD(event,'ddMe')"><span class="av" id="meav"></span><div><b id="mename"></b><small id="merole"></small></div><i data-lucide="chevron-down" style="width:15px;color:var(--muted)"></i><div class="dd" id="ddMe"></div></div>
+    </header>
+    <main class="view" id="view"></main>
+    <footer class="pfoot">Powered by <b>Marigold Enterprises</b></footer>
+  </div>
+</div>
+<div class="ov" id="ov" onmousedown="if(event.target===this)closeModal()"><div class="modal" id="modal"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* =========================================================
+   CONSTANTS
+   ========================================================= */
+const LS='svw_demo_v2';
+const TEMPLATE=['Assigned','Measurement','Drawing Approval','Material Issued','Cutting','Carpentry','Assembly','Polishing','Hardware Fixing','QC','Complete'];
+const SOURCES=['Walk-in','Phone','WhatsApp','Website','Social Media','Referral','Other'];
+const CATS=['Furniture','Joinery','Interior'];
+const MTYPES=['Timber','Plywood','Hardware','Adhesive','Polish','Other'];
+const STATIONS=['Cutting','Assembly','Polishing','Carving','Finishing'];
+const QC_LIST=['Measurement correct','Drawing matched','Joints strong','Surface smooth','Polish even','Hardware working','Finish good','Quantity correct','Photo taken'];
+const ROLES={'Admin':'System Administrator','Sales Manager':'SHOWROOM','Production Manager':'HARIDAS','Supervisor':'THEJUS','Accounts':'Accounts Staff'};
+const NOTES={
+ Joinery:`Any work other than mentioned above will be charged extra.
+Using 1st quality seasoned Nilambur Teak Wood.
+Polish or painting not included in this quotation (base coat sealer only).
+Fixing charge will be extra (fixing carpenter accommodation, electricity and drinking water arranged by client).
+Brass fittings, glass, lock, hinges, handle, tower bolt – fixing hardware supplied by client.
+Quotation validity 30 days.
+Advance 60% along with the order and balance 40% before delivery.`,
+ Furniture:`Full teak wood as per approved model.
+Polish as per selected colour.
+Transport charges extra if outside 25 km.
+Quotation validity 30 days.
+Advance 50% along with the order and balance before delivery.`,
+ Interior:`Rate is per square feet as per final site measurement.
+BWP plywood with inner white laminate, outer matt laminate.
+Electrical and civil work not included.
+Quotation validity 30 days.
+Advance 50% along with the order, 40% during work, 10% on handover.`};
+// [key, label, icon, iconBg, group]
+const MODS=[
+ ['home','Home','house','#3B82F6',''],
+ ['leads','Leads','target','#F43F5E','Sales'],['customers','Customers','users','#8B5CF6','Sales'],['quotations','Quotations','file-text','#F59E0B','Sales'],['items','Item Master','box','#14B8A6','Sales'],['orders','Orders','shopping-cart','#22C55E','Sales'],
+ ['jobs','All Jobs','hammer','#F97316','Workshop'],['teams','Teams & Workers','hard-hat','#06B6D4','Workshop'],['attendance','Attendance','calendar-check','#A855F7','Workshop'],['stages','Stages & Templates','git-branch','#64748B','Workshop'],
+ ['materials','Materials','package','#EAB308','Stock'],
+ ['billing','Billing & Accounts','indian-rupee','#10B981','Money'],['payroll','Payroll','wallet','#EC4899','Money'],
+ ['settings','Settings','settings','#94A3B8','Admin']];
+const GROUP_ICON={Sales:'briefcase',Workshop:'factory',Stock:'warehouse',Money:'landmark',Admin:'shield'};
+
+/* =========================================================
+   HELPERS
+   ========================================================= */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pad=(n,l)=>String(n).padStart(l,'0');
+const todayISO=()=>{const d=new Date();return d.getFullYear()+'-'+pad(d.getMonth()+1,2)+'-'+pad(d.getDate(),2)};
+const addDays=(iso,n)=>{const d=new Date(iso+'T00:00');d.setDate(d.getDate()+n);return d.getFullYear()+'-'+pad(d.getMonth()+1,2)+'-'+pad(d.getDate(),2)};
+const daysBetween=(a,b)=>Math.round((new Date(b+'T00:00')-new Date(a+'T00:00'))/864e5);
+const inr=(n,dec)=>'₹'+(+n||0).toLocaleString('en-IN',{minimumFractionDigits:dec?2:0,maximumFractionDigits:dec?2:0});
+const fmtD=iso=>iso?new Date(iso.slice(0,10)+'T00:00').toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}):'—';
+const fmtDT=iso=>iso?fmtD(iso)+(iso.length>10?', '+new Date(iso).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}):''):'—';
+const nowISO=()=>{const d=new Date();return todayISO()+'T'+pad(d.getHours(),2)+':'+pad(d.getMinutes(),2)};
+const ic=(n,st='')=>`<i data-lucide="${n}"${st?` style="${st}"`:''}></i>`;
+const AVC=['#F97316','#3B82F6','#8B5CF6','#10B981','#EC4899','#0EA5E9','#EAB308','#EF4444','#14B8A6','#6366F1'];
+const hashN=s=>{let h=0;for(const c of String(s))h=(h*31+c.charCodeAt(0))>>>0;return h};
+const initials=n=>String(n||'?').trim().split(/\s+/).slice(0,2).map(w=>w[0]).join('').toUpperCase();
+const av=(n,cls='')=>`<span class="av ${cls}" style="background:${AVC[hashN(n)%AVC.length]}">${esc(initials(n))}</span>`;
+const title=s=>String(s||'').toLowerCase().replace(/\b\w/g,c=>c.toUpperCase());
+const val=id=>{const e=document.getElementById(id);return e?e.value.trim():''};
+const num=id=>parseFloat(val(id))||0;
+function toast(m,i='check-circle-2'){const t=$('#toast');t.innerHTML=ic(i)+esc(m);t.classList.add('show');lucide.createIcons();clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2600)}
+function openModal(t,body,foot='',cls=''){$('#ov').className='ov show'+(cls==='drawer'?' drawer':'');$('#modal').className='modal'+(cls==='wide'?' wide':'');$('#modal').innerHTML=`<div class="m-h"><h3>${t}</h3><button class="ibtn" onclick="closeModal()">${ic('x')}</button></div><div class="m-b">${body}</div>${foot?`<div class="m-f">${foot}</div>`:''}`;lucide.createIcons()}
+function closeModal(){$('#ov').className='ov'}
+function audit(msg){S.audit.unshift({at:nowISO(),by:ROLES[S.role],msg})}
+
+/* =========================================================
+   SEED DATA  (taken from the live portal on 14 Oct 2026)
+   ========================================================= */
+function seed(){
+  const d={v:2,role:'Admin',target:1000000,seq:{lead:12,cus:6,quo:22,ord:22,job:15,item:30,mat:40,wrk:30,team:5,user:6},
+   perms:{'Admin':MODS.map(m=>m[0]),'Sales Manager':['home','leads','customers','quotations','items','orders'],'Production Manager':['home','orders','jobs','teams','attendance','stages','materials'],'Supervisor':['home','jobs','attendance','materials'],'Accounts':['home','orders','billing','payroll']},
+   guideHidden:false};
+  d.leads=[
+   ['SVW-LEAD-000011','selvaraj','+91 85939 51042','Parali Post','Door','Other','Open','2026-10-12'],
+   ['SVW-LEAD-000009','Kannan','90865 43409','Palakkad','Door','Website','Open','2026-10-03'],
+   ['SVW-LEAD-000008','Vinod','94463 04888','Coimbatore','','Social Media','Open','2026-10-02'],
+   ['SVW-LEAD-000007','Haridas','80891 30556','Kottayi, Palakkad','Teak table','Social Media','Open','2026-10-02']
+  ].map(([id,name,mobile,place,req,source,status,date])=>({id,name,mobile,place,req,source,status,date,notes:''}));
+  d.customers=[
+   ['SVW-CUS-000005','INDU VINOD','Sri Vinayaka Wood Furniture','71503 89837','Furniture','Direct','2026-10-01T16:04'],
+   ['SVW-CUS-000004','SATHYAMOORTHY','Sri Vinayaka Wood Furniture','98430 86566','Furniture','Direct','2026-10-01T14:37'],
+   ['SVW-CUS-000003','abilash','Furniture manufacture','85928 49777','Furniture','Direct','2026-10-01T12:25']
+  ].map(([id,name,company,mobile,cat,source,at])=>({id,name,company,mobile,cat,source,at,active:true}));
+  d.items=[
+   ['MATRESS 75X60X6 PEPS CAROUSEL','Matress','Furniture','Per Piece','pcs',20000],
+   ['6.25X5 ORCHID COT','Full teak wood, orchid model','Furniture','Per Piece','pcs',33000],
+   ['6.5X6 PILLER COT','Full teak, as per pic model, bottom round','Furniture','Per Piece','pcs',64000],
+   ['TEAPOY','Ameen model, top glass, teak wood','Furniture','Per Piece','pcs',10000],
+   ['BOX SETTY 6" HAND THICKNESS 2+LOUNGER','Teak wood as per model','Furniture','Per Piece','pcs',80000],
+   ['CENTER BOX','Full teak wood, box sofa center box','Furniture','Per Piece','pcs',17000],
+   ['DINING CHAIR DAFFO MODEL','Daffo model, teak wood','Furniture','Per Piece','pcs',10000],
+   ['4 SEATER','As per model, full teak wood','Furniture','Per Piece','pcs',18500],
+   ['CONSOLE TABLE','Teak wood top, marble, rose wood colour polish · 130×50×40 cm','Furniture','Per Piece','pcs',30000],
+   ['WOODEN TEAPOY','Sofa model, same leg type, 105×55 cm','Furniture','Per Piece','pcs',15000],
+   ['BED SIDE BOX','Height as per cot height, full teak wood','Furniture','Per Piece','pcs',8000],
+   ['5 FEET WOODEN FLOATING COT','Side extra 2 inch, all side curved, as per measurement','Furniture','Per Piece','pcs',40000],
+   ['SIDE TABLE 50 CM X 50 CM','Sofa model side table, same leg type, full teak wood','Furniture','Per Piece','pcs',10000],
+   ['7 FEET YESOTH MODEL SOFA','Cushion colour grey, plank height 14 inch, full teak wood','Furniture','Per Piece','pcs',26000],
+   ['4X3 DINING TABLE TOP WOOD','Teak wood dining table','Furniture','Per Piece','pcs',25000],
+   ['DINING CHAIR','Teak wood','Furniture','Per Piece','pcs',4000],
+   ['Main Door Frame WT','Door cum window, right side window, grill type 19 mm SS304 square pipe, normal groove design','Joinery','Per Piece','pcs',28500],
+   ['Single Door','Teak wood single door','Joinery','Per Piece','pcs',15000],
+   ['TV UNIT WITH WALL PANEL AND STORAGE UNIT','BWP plywood with inner white laminate, finished in matt laminate','Interior','Per Sqft','sq ft',900]
+  ].map(([name,desc,cat,basis,unit,price],i)=>({id:'IT'+(i+1),name,desc,cat,basis,unit,price,active:true}));
+  const it=n=>d.items.find(x=>x.name===n);
+  const L=(n,qty,rate)=>{const x=it(n);return{item:x.id,name:x.name,desc:x.desc,qty,rate:rate??x.price,disc:0,unit:x.unit}};
+  const Lc=(name,qty,rate)=>({item:'',name,desc:'',qty,rate,disc:0,unit:'pcs'});
+  d.quotations=[
+   ['SVW-QUO-000021','MURUGESHAN','','Furniture','Converted','2026-10-14T11:53',[L('6.5X6 PILLER COT',1),L('6.25X5 ORCHID COT',1),L('MATRESS 75X60X6 PEPS CAROUSEL',1),L('BED SIDE BOX',1,6000)],'ORD000021','ABILASH'],
+   ['SVW-QUO-000020','HARI','','Furniture','Converted','2026-10-14T10:43',[L('TEAPOY',1)],'ORD000020','SINDHU'],
+   ['SVW-QUO-000019','SMRITHIKA','','Furniture','Converted','2026-10-14T10:40',[L('BOX SETTY 6" HAND THICKNESS 2+LOUNGER',1)],'ORD000019','FIROZ'],
+   ['SVW-QUO-000018','NAVAS','','Furniture','Converted','2026-10-13T17:58',[L('4 SEATER',1),L('CENTER BOX',1),L('SIDE TABLE 50 CM X 50 CM',1)],'ORD000018','SINDHU'],
+   ['SVW-QUO-000017','Saravanakumar','','Joinery','Converted','2026-10-12T18:09',[L('Main Door Frame WT',1)],'ORD000017','KANNAN'],
+   ['SVW-QUO-000015','Abdul Musaveer','TATA','Joinery','Approved','2026-10-03T11:35',[Lc('Joinery work – doors & windows (as per site measurement)',1,153562.5)],'','KANNAN'],
+   ['SVW-QUO-000012','INDU VINOD','Sri Vinayaka Wood Furniture','Furniture','Converted','2026-10-01T15:23',[L('CONSOLE TABLE',1)],'ORD000010','SINDHU'],
+   ['SVW-QUO-000010','SATHYAMOORTHY','Sri Vinayaka Wood Furniture','Furniture','Converted','2026-10-01T14:50',[L('4X3 DINING TABLE TOP WOOD',1),L('DINING CHAIR',4),L('7 FEET YESOTH MODEL SOFA',1),L('SIDE TABLE 50 CM X 50 CM',1),L('5 FEET WOODEN FLOATING COT',1),L('BED SIDE BOX',1),L('WOODEN TEAPOY',1)],'ORD000009','ABILASH'],
+   ['SVW-QUO-000008','abilash','Furniture manufacture','Furniture','Converted','2026-10-01T12:15',[Lc('Furniture work',1,29450)],'','ABILASH']
+  ].map(([id,cust,company,cat,status,at,lines,order,sales])=>({id,cust,company,mobile:'',email:'',address:'',cat,status,at,lines,charges:[],discPct:0,taxPct:0,notes:NOTES[cat],order,sales,expected:''}));
+  const O=(id,cust,mobile,addr,cat,quo,date,expected,sales)=>{const q=d.quotations.find(x=>x.id===quo);return{id,cust,mobile,address:addr,cat,src:quo,date,expected,sales,lines:q.lines.map(x=>({...x})),charges:[],discPct:0,taxPct:0,delivered:false}};
+  d.orders=[
+   O('ORD000021','MURUGESHAN','','','Furniture','SVW-QUO-000021','2026-10-14T11:55','2026-10-28','ABILASH'),
+   O('ORD000020','HARI','','','Furniture','SVW-QUO-000020','2026-10-14T10:45','2026-10-23','SINDHU'),
+   O('ORD000019','SMRITHIKA','','','Furniture','SVW-QUO-000019','2026-10-14T10:42','2026-10-28','FIROZ'),
+   O('ORD000018','NAVAS','','','Furniture','SVW-QUO-000018','2026-10-13T18:00','2026-10-26','SINDHU'),
+   O('ORD000017','Saravanakumar','90372 27441','Erimayuyr','Joinery','SVW-QUO-000017','2026-10-12T18:09','2026-10-19','KANNAN'),
+   O('ORD000010','INDU VINOD','71503 89837','','Furniture','SVW-QUO-000012','2026-10-01T16:04','2026-11-01','SINDHU'),
+   O('ORD000009','SATHYAMOORTHY','98430 86566','','Furniture','SVW-QUO-000010','2026-10-01T14:52','2026-10-09','ABILASH')];
+  d.payments=[{id:'PAY-0001',order:'ORD000017',at:'2026-10-12T18:22',amount:18000,mode:'UPI',by:'System Administrator'}];
+  d.materials=[
+   ['Teak Plank','Teak plank','Timber','cft',4500,20,8],['Teak wood Kerala','Kerala teak wood','Timber','cft',3500,4,8],['Teak Wood 1st','First quality teak','Timber','cft',4000,25,8],['Teak wood','Regular teak','Timber','cft',2500,30,8],
+   ['Black Screw Cross Thread 2½×8','','Hardware','box',300,12,4],['Black Screw Cross Thread 2×6','','Hardware','box',300,14,4],['Black Screw Cross Thread 1½×6','','Hardware','box',260,8,4],['Black Screw Cross Thread 3×8','','Hardware','box',260,3,4],
+   ['Wood Glue Asian 50 Kg','','Adhesive','kg',110,150,40],['Black Screw Cross Thread 5×8 inch','','Hardware','box',780,3,4],['Black Screw Cross Thread 1×6 inch','','Hardware','box',240,6,4],['Black Screw Cross Thread ½×6 inch','','Hardware','box',225,5,4],
+   ['Fevicol SR 50 Kg','','Adhesive','kg',156,50,20],['Fevicol SH Drum (50 kg)','','Adhesive','kg',170,102,20],['Cutting Bolt 7 inch','','Hardware','piece',230,10,4],['Cutting Bolt 8 inch','','Hardware','piece',225,10,4],['Cutting Bolt 6 inch','','Hardware','piece',200,10,4],
+   ['Araldite Slow','','Adhesive','litre',1400,5,2],['Araldite Fast','','Adhesive','litre',850,4,2],['Araldite Paste','','Adhesive','piece',130,8,3],['SS Bottom Kada','','Hardware','piece',800,5,3],['Kitchen Leg Ebco','','Hardware','piece',210,32,10]
+  ].map(([name,desc,type,unit,price,stock,min],i)=>({id:'MT'+(i+1),name,desc,type,unit,price,stock,min,active:true,at:'2026-10-12'}));
+  const mid=n=>d.materials.find(m=>m.name===n).id;
+  d.stages=[
+   ['Assigned','#64748B','',1,1],['Material Issued','#3B82F6','',0,0],['Cutting','#EAB308','Cutting',0,0],['Carpenter Assembly','#F97316','Assembly',0,0],['Finishing','#8B5CF6','Finishing, Sanding',0,0],['QC','#0D9488','',0,1],['Complete','#16A34A','',0,0],
+   ['Wood Cutting','#CA8A04','',0,0],['Wood Plaining','#A16207','',0,0],['Carpenter Work','#9CA3AF','',0,0,false],['Sandring','#C084FC','',0,0],['Polishing','#A855F7','',0,0],['Assembly','#EA580C','Assembly',0,0],['Measurement','#06B6D4','',0,0],['Drawing Approval','#6366F1','',0,0],['Carpentry','#F97316','',0,0],['Hardware Fixing','#0EA5E9','',0,0]
+  ].map(([name,color,station,start,rework,active],i)=>({id:'ST'+i,name,color,station,start:!!start,rework:!!rework,active:active!==false}));
+  d.template=[...TEMPLATE];
+  d.labels=[{id:'LB1',name:'Labour Charge',bucket:'labour',system:true,active:true},{id:'LB2',name:'Tools Charge',bucket:'additional',system:true,active:true},{id:'LB3',name:'Transport Charge',bucket:'additional',system:true,active:true}];
+  const W=(name,station,wage)=>({id:'W'+(hashN(name)%100000),name,station,wage,phone:'',active:true});
+  d.workers=[W('Abbas Mill worker','Cutting',850),W('Abhin','Assembly',900),W('Adiyarthevar','Assembly',900),W('Anil','Assembly',950),W('Anil OTP','Assembly',900),W('Anitha','Polishing',700),W('Anitha.k','Polishing',700),W('Anoop','Carving',1000),W('Aseena','Polishing',700),
+    W('Ashraf','Assembly',1200),W('Sanjay','Assembly',950),W('Aruldas','Assembly',950),W('Bijesh','Assembly',950),W('Vinil','Assembly',1100),W('Padmesh','Assembly',1100),W('Jayaraj','Assembly',950),W('Subramanian','Assembly',950),W('Kannan','Assembly',1100)];
+  const wid=n=>d.workers.find(w=>w.name===n).id;
+  d.teams=[['Team Ashraf Furniture',['Ashraf','Sanjay','Aruldas']],['Team Vinil Furniture',['Bijesh','Vinil']],['Team Padmesh Furniture',['Padmesh','Jayaraj']],['Team Kannan Furniture',['Subramanian','Kannan']]]
+   .map(([name,m],i)=>({id:'TM'+(i+1),name,station:'Assembly',members:m.map(wid),active:true,at:'2026-10-12'}));
+  // attendance for this month (sample) – today left unmarked
+  d.att={};const t=todayISO();const first=t.slice(0,8)+'01';
+  for(let dt=first;dt<t;dt=addDays(dt,1)){if(new Date(dt+'T00:00').getDay()===0)continue;d.att[dt]={};d.workers.forEach(w=>{const r=hashN(w.id+dt)%20;d.att[dt][w.id]=r<16?'P':r<18?'H':'A'})}
+  d.payroll={};
+  // jobs
+  const J=(id,order,manager,created,items,cut=[],costs=[])=>{const o=d.orders.find(x=>x.id===order);return{id,order,manager,created,items:o.lines.map((l,k)=>({name:l.name,qty:l.qty,stage:items[k]||0,team:'',history:[{stage:'Assigned',at:created,by:'System Administrator'}]})),cut,costs,history:[{at:created,by:'System Administrator',msg:'Order assigned to production'}]}};
+  const P=(item,piece,mat,Lft,Win,Tin,qty)=>({item,piece,mat:mid(mat),L:Lft,W:Win,T:Tin,qty});
+  d.jobs=[
+   J('JOB-2026-0005','ORD000009','HARIDAS','2026-10-01T15:05',[3],[
+     P('7 FEET YESOTH MODEL SOFA','Seat Plank','Teak Wood 1st',7,23,1.5,1),P('7 FEET YESOTH MODEL SOFA','Leg','Teak Wood 1st',1.25,22,1.5,2),P('7 FEET YESOTH MODEL SOFA','Hand & Back Support','Teak Wood 1st',2,6,1.5,4),P('7 FEET YESOTH MODEL SOFA','Back Frame','Teak wood',6.5,3,1.25,2),
+     P('WOODEN TEAPOY','Top Plank','Teak wood',3.5,21,1,1),P('WOODEN TEAPOY','Leg','Teak Wood 1st',2,20,1.5,2),P('WOODEN TEAPOY','Cross','Teak wood',2,2,1.25,2),
+     P('SIDE TABLE 50 CM X 50 CM','Top Plank','Teak wood',2,20,1,1),P('SIDE TABLE 50 CM X 50 CM','Leg','Teak Wood 1st',2.5,20,1.5,2),P('SIDE TABLE 50 CM X 50 CM','Cross','Teak wood',1.5,2,1.25,2),
+     P('BED SIDE BOX','Top & Bottom Plank','Teak wood',1.5,16,1,2),P('BED SIDE BOX','Side Plank','Teak wood',1.5,10,1,3),P('BED SIDE BOX','Drawer','Teak wood',1.5,5,1,4),P('BED SIDE BOX','Drawer Base','Teak wood',1.5,18,.75,1),
+     P('5 FEET WOODEN FLOATING COT','Leg','Teak wood',2.5,4,3,2),P('5 FEET WOODEN FLOATING COT','Leg','Teak wood',2,4,3,1),P('5 FEET WOODEN FLOATING COT','Head Panelling Plank','Teak wood',5.5,21,1,1),P('5 FEET WOODEN FLOATING COT','Cross','Teak wood',5.5,3,1.25,2),P('5 FEET WOODEN FLOATING COT','Cross','Teak wood',2,3,1.25,4),P('5 FEET WOODEN FLOATING COT','Side Bar','Teak wood',6.5,5,1.75,2),P('5 FEET WOODEN FLOATING COT','Side Bar','Teak wood',5.25,5,1.75,2),P('5 FEET WOODEN FLOATING COT','Side Beeding','Teak wood',6.5,3,1.25,2),P('5 FEET WOODEN FLOATING COT','Bed Plank','Teak wood',6.5,63,.75,1),P('5 FEET WOODEN FLOATING COT','Under Cross','Teak wood',5.5,3,1.25,1),P('5 FEET WOODEN FLOATING COT','Under Cross','Teak wood',6.5,5,1.25,1)],
+     [{label:'Labour Charge',bucket:'labour',item:'BED SIDE BOX',stage:'Assigned',at:'2026-10-12',amount:900,note:''},{label:'Labour Charge',bucket:'labour',item:'7 FEET YESOTH MODEL SOFA',stage:'Assembly',at:'2026-10-12',amount:3000,note:'1500 × 2'},{label:'Material',bucket:'material',item:'7 FEET YESOTH MODEL SOFA',stage:'Assembly',at:'2026-10-12',amount:12360,note:'Recorded material'}]),
+   J('JOB-2026-0010','ORD000017','deepak','2026-10-12T18:09',[0],[P('Main Door Frame WT','Jambs','Teak wood Kerala',7,6,4,2),P('Main Door Frame WT','Footer','Teak wood Kerala',4.75,6,4,1),P('Main Door Frame WT','Window Jambs','Teak wood Kerala',6,6,4,1),P('Main Door Frame WT','Window Footer','Teak wood Kerala',2.5,6,4,1),P('Main Door Frame WT','Top Jambs','Teak wood Kerala',6.5,6,4,1)]),
+   J('JOB-2026-0013','ORD000020','HARIDAS','2026-10-14T10:45',[0]),
+   J('JOB-2026-0011','ORD000018','HARIDAS','2026-10-13T18:00',[0]),
+   J('JOB-2026-0014','ORD000021','HARIDAS','2026-10-14T11:55',[0]),
+   J('JOB-2026-0012','ORD000019','HARIDAS','2026-10-14T10:42',[0]),
+   J('JOB-2026-0008','ORD000010','HARIDAS','2026-10-01T16:04',[0])];
+  d.jobs[0].items[0].history.push({stage:'Material Issued',at:'2026-10-12T12:32',by:'System Administrator'});
+  d.users=[['THEJUS','Supervisor','Furniture','',''],['SHOWROOM','Sales Manager','','',''],['deepak','Production Manager','Joinery','deepak@gmail.com','80892 60295'],['HARIDAS','Production Manager','Furniture','','80891 30556'],['System Administrator','Admin','','admin@svw.local','99999 99999']]
+   .map(([name,role,cat,email,mobile],i)=>({id:'U'+(i+1),name,role,cat,email,mobile,active:true}));
+  d.audit=[
+   {at:'2026-10-14T11:55',by:'System Administrator',msg:'Order ORD000021 created from quotation SVW-QUO-000021'},
+   {at:'2026-10-14T10:45',by:'System Administrator',msg:'Order ORD000020 created from quotation SVW-QUO-000020'},
+   {at:'2026-10-12T18:25',by:'System Administrator',msg:'Cutting list updated (JOB-2026-0010): 5 pieces, material cost ₹19,688'},
+   {at:'2026-10-12T18:22',by:'System Administrator',msg:'Payment of ₹18,000 received via UPI for ORD000017. Balance ₹10,500'},
+   {at:'2026-10-12T18:09',by:'System Administrator',msg:'Order ORD000017 assigned to production (JOB-2026-0010)'},
+   {at:'2026-10-12T12:32',by:'System Administrator',msg:'JOB-2026-0005 · 4X3 DINING TABLE TOP WOOD moved to Material Issued'}];
+  d.orderLog={'ORD000017':[
+   {at:'2026-10-12T18:25',msg:'Cutting list updated (JOB-2026-0010): 0 → 5 pieces, material cost ₹19,688'},
+   {at:'2026-10-12T18:22',msg:'Payment of ₹18,000 received via UPI. Balance ₹10,500'},
+   {at:'2026-10-12T18:09',msg:'Assigned to production (JOB-2026-0010). Status changed from Confirmed to In Production'},
+   {at:'2026-10-12T18:09',msg:'Order created from quotation SVW-QUO-000017'}]};
+  // hide real phone numbers / emails in this shared demo
+  const mk=m=>{if(!m)return m;let n=0;const t=(m.match(/\d/g)||[]).length;return m.replace(/\d/g,c=>{n++;return n<=2||n>t-2?c:'•'})};
+  [...d.leads,...d.customers,...d.orders,...d.users].forEach(x=>x.mobile=mk(x.mobile));
+  d.users.forEach(u=>{if(u.email)u.email=u.email.replace(/^(.)[^@]*/,'$1•••')});
+  return d;
+}
+let S=load();
+function load(){try{const x=JSON.parse(localStorage.getItem(LS));if(x&&x.v===2)return x}catch(e){}return seed()}
+function save(){try{localStorage.setItem(LS,JSON.stringify(S))}catch(e){}}
+const UI={route:'home',param:'',navQ:'',closed:{},period:'30',leadQ:'',leadSrc:'',leadSt:'',leadView:'list',quoQ:'',quoSt:'',quoCat:'',quoView:'list',quoMine:false,itemQ:'',itemCat:'',ordQ:'',ordCat:'',ordSt:'',ordMine:false,matQ:'',matType:'',jobQ:'',jobCat:'',jobStage:'',jobUrgent:false,jobView:'list',teamTab:'teams',attDate:todayISO(),attQ:'',attSt:'',attTeam:'',attTab:'mark',stageF:'all',billTab:'receivable',payMonth:todayISO().slice(0,7),setTab:'users',cusQ:''};
+
+/* =========================================================
+   DERIVED VALUES
+   ========================================================= */
+const lineAmt=l=>l.qty*l.rate*(1-(l.disc||0)/100);
+function totals(doc){const sub=doc.lines.reduce((a,l)=>a+lineAmt(l),0)+(doc.charges||[]).reduce((a,c)=>a+(+c.amount||0),0);const disc=sub*(doc.discPct||0)/100;const tax=(sub-disc)*(doc.taxPct||0)/100;return{sub,disc,tax,total:sub-disc+tax}}
+const total=doc=>totals(doc).total;
+const paidOf=id=>S.payments.filter(p=>p.order===id).reduce((a,p)=>a+p.amount,0);
+const order=id=>S.orders.find(o=>o.id===id);
+const jobOfOrder=id=>S.jobs.find(j=>j.order===id);
+const job=id=>S.jobs.find(j=>j.id===id);
+const mat=id=>S.materials.find(m=>m.id===id);
+const worker=id=>S.workers.find(w=>w.id===id);
+const teamOf=wid=>S.teams.find(t=>t.members.includes(wid));
+const stageColor=n=>(S.stages.find(s=>s.name===n)||{}).color||'#64748B';
+const DONE=()=>S.template.length-1;
+const cft=p=>p.L*(p.W/12)*(p.T/12)*p.qty;
+const pieceCost=p=>cft(p)*((mat(p.mat)||{}).price||0);
+function jobStatus(j){if(j.items.every(i=>i.stage>=DONE()))return'Completed';if(j.items.some(i=>i.stage>0))return'In Progress';return'Not Started'}
+function jobDue(j){const o=order(j.order);if(!o||jobStatus(j)==='Completed')return null;const d=daysBetween(todayISO(),o.expected);return d}
+function orderStatus(o){if(o.delivered)return'Delivered';const j=jobOfOrder(o.id);if(!j)return'Confirmed';const s=jobStatus(j);if(s==='Completed')return'Ready for Delivery';return'In Production'}
+const ST_PILL={'Open':'p-blue','Contacted':'p-violet','Quoted':'p-amber','Converted':'p-green','Lost':'p-red','Draft':'p-gray','Sent':'p-blue','Approved':'p-green','Rejected':'p-red','Confirmed':'p-gray','In Production':'p-violet','Ready for Delivery':'p-teal','Delivered':'p-green','Not Started':'p-gray','In Progress':'p-blue','Completed':'p-green','Active':'p-green','Inactive':'p-gray'};
+const pill=s=>`<span class="pill ${ST_PILL[s]||'p-gray'}">${esc(s==='Converted'&&false?'':s)}</span>`;
+const stagePill=n=>`<span class="pill" style="background:${stageColor(n)}1F;color:${stageColor(n)}">${esc(n)}</span>`;
+const dueChip=d=>d==null?'':d<0?`<span class="pill p-red">Late by ${-d} day${d===-1?'':'s'}</span>`:d<=5?`<span class="pill p-amber">Due in ${d} day${d===1?'':'s'}</span>`:'';
+const lowStock=()=>S.materials.filter(m=>m.active&&m.stock<m.min);
+const allowed=()=>S.perms[S.role]||['home'];
+
+/* =========================================================
+   SHELL: NAV / TOPBAR / ROUTER
+   ========================================================= */
+function renderNav(){
+  const al=allowed(),q=UI.navQ.toLowerCase();let h='';const groups={};
+  MODS.filter(m=>al.includes(m[0])&&(!q||m[1].toLowerCase().includes(q))).forEach(m=>(groups[m[4]]=groups[m[4]]||[]).push(m));
+  const late=S.jobs.filter(j=>{const d=jobDue(j);return d!=null&&d<0}).length;
+  const link=m=>`<a href="#${m[0]}" class="${UI.route===m[0]||(UI.route==='job'&&m[0]==='jobs')?'on':''}${m[4]?'':' top'}" onclick="document.body.classList.remove('navopen')"><span class="ico" style="background:${m[3]}26;color:${m[3]}">${ic(m[2])}</span>${m[1]}${m[0]==='jobs'&&late?`<span class="cnt">${late}</span>`:''}</a>`;
+  Object.entries(groups).forEach(([g,ms])=>{if(!g){h+=ms.map(link).join('');return}
+    h+=`<div class="grp ${UI.closed[g]&&!q?'closed':''}"><div class="gh" onclick="UI.closed['${g}']=!UI.closed['${g}'];renderNav()">${ic(GROUP_ICON[g],'width:16px;color:var(--side-mute)')}${g}<i data-lucide="chevron-down" class="chev"></i></div><div class="items">${ms.map(link).join('')}</div></div>`});
+  $('#nav').innerHTML=h||'<div class="small" style="padding:10px;color:var(--side-mute)">No menu found</div>';
+  const nm=ROLES[S.role];$('#meav').outerHTML=av(nm).replace('class="av ','id="meav" class="av ');$('#mename').textContent=nm;$('#merole').textContent=S.role;
+  const n=notifs().length;$('#ndot').textContent=n;$('#ndot').style.display=n?'grid':'none';
+  lucide.createIcons();
+}
+function notifs(){const n=[];
+  S.jobs.forEach(j=>{const d=jobDue(j);if(d!=null&&d<0)n.push(['alarm-clock','p-red',`${j.id} (${order(j.order).cust}) is late by ${-d} days`,`#job/${j.id}`]);else if(d!=null&&d<=5)n.push(['clock','p-amber',`${j.id} is due in ${d} days`,`#job/${j.id}`])});
+  S.quotations.filter(q=>q.status==='Approved').forEach(q=>n.push(['file-check','p-green',`${q.id} is approved – convert it to an order`,'#quotations']));
+  lowStock().forEach(m=>n.push(['package','p-amber',`Low stock: ${m.name} (${m.stock} ${m.unit} left)`,'#materials']));
+  S.leads.filter(l=>l.status==='Open').slice(0,3).forEach(l=>n.push(['phone','p-blue',`Call back ${l.name} – ${l.req||'enquiry'}`,'#leads']));
+  return n}
+function toggleDD(e,id){e.stopPropagation();const el=document.getElementById(id);const was=el.classList.contains('show');document.querySelectorAll('.dd').forEach(d=>d.classList.remove('show'));if(was)return;
+  if(id==='ddNew')el.innerHTML=`<h6>Create new</h6>`+[['target','New Lead','newLead()','leads'],['file-text','New Quotation','openQuoteForm()','quotations'],['shopping-cart','Direct Order','openQuoteForm({direct:true})','orders'],['indian-rupee','Record Payment','recordPayment()','billing'],['package-plus','Add Material / Stock','editMaterial()','materials'],['user-plus','Add Worker','editWorker()','teams']].filter(x=>allowed().includes(x[3])).map(x=>`<div class="di" onclick="${x[2]}">${ic(x[0],'color:var(--pri)')}${x[1]}</div>`).join('');
+  if(id==='ddBell'){const n=notifs();el.innerHTML=`<h6>Notifications (${n.length})</h6>`+(n.map(x=>`<div class="di" onclick="nav('${x[3]}')"><span class="pill ${x[1]}" style="padding:6px">${ic(x[0],'width:14px;height:14px')}</span><span class="small">${esc(x[2])}</span></div>`).join('')||'<div class="empty">All clear 🎉</div>')}
+  if(id==='ddMe')el.innerHTML=`<h6>View the app as…</h6>`+Object.keys(ROLES).map(r=>`<div class="di" onclick="setRole('${r}')">${av(ROLES[r])}<div><b style="font-size:13px">${esc(ROLES[r])}</b><div class="small muted">${r}</div></div>${S.role===r?ic('check','margin-left:auto;color:var(--pri)'):''}</div>`).join('')+`<div class="di" style="border-top:1px solid var(--line);margin-top:4px" onclick="resetDemo()">${ic('rotate-ccw')}Reset demo data</div>`;
+  el.classList.add('show');lucide.createIcons()}
+document.addEventListener('click',e=>{document.querySelectorAll('.dd').forEach(d=>d.classList.remove('show'));if(!e.target.closest('.gsearch'))$('#sres').classList.remove('show')});
+function setRole(r){S.role=r;save();if(!allowed().includes(UI.route==='job'?'jobs':UI.route))nav('home');render();toast('Now showing the app as '+ROLES[r]+' ('+r+')','user')}
+function resetDemo(){ask('Reset all demo data to the starting point? Your changes will be removed.',()=>{try{localStorage.removeItem(LS)}catch(e){}S=seed();save();render();toast('Demo data reset','rotate-ccw')},'Reset')}
+/* in-page replacements for confirm()/prompt() (blocked in the shared viewer) */
+let _askFn=null,_inFn=null;
+function ask(msg,fn,yes='Yes, delete'){_askFn=fn;openModal('Please confirm',`<div class="help warn">${ic('alert-triangle')}<div>${esc(msg)}</div></div>`,`<button class="btn" onclick="closeModal()">Cancel</button><button class="btn pri" onclick="closeModal();_askFn&&_askFn()">${yes}</button>`)}
+function askInput(t,label,v,fn,type='text'){_inFn=fn;openModal(t,`<div class="fld"><label>${label}</label><input class="inp" id="ai_v" type="${type}" style="width:100%" value="${esc(v??'')}"></div>`,`<button class="btn" onclick="closeModal()">Cancel</button><button class="btn pri" onclick="const v=val('ai_v');if(!v)return;closeModal();_inFn(v)">${ic('check')}Save</button>`);setTimeout(()=>$('#ai_v')?.focus(),50)}
+function nav(h){const p=String(h).replace(/^#/,'').split('/');UI.route=p[0]||'home';UI.param=p[1]||'';try{history.replaceState(null,'','#'+UI.route)}catch(e){}render()}
+document.addEventListener('click',e=>{const a=e.target.closest('a[href^="#"]');if(a){e.preventDefault();nav(a.getAttribute('href'))}},true);
+function globalSearch(q){const box=$('#sres');q=q.trim().toLowerCase();if(!q){box.classList.remove('show');return}
+  const r=[];S.leads.forEach(l=>{if([l.name,l.mobile,l.id].join(' ').toLowerCase().includes(q))r.push(['target','Lead',l.name,l.id,`#leads`])});
+  S.customers.forEach(c=>{if([c.name,c.mobile,c.id].join(' ').toLowerCase().includes(q))r.push(['users','Customer',c.name,c.id,'#customers'])});
+  S.quotations.forEach(x=>{if([x.cust,x.id].join(' ').toLowerCase().includes(q))r.push(['file-text','Quotation',x.cust,x.id,'#quotations'])});
+  S.orders.forEach(o=>{if([o.cust,o.id,o.mobile].join(' ').toLowerCase().includes(q))r.push(['shopping-cart','Order',o.cust,o.id,`javascript:viewOrder('${o.id}')`])});
+  S.jobs.forEach(j=>{if([j.id,j.order,order(j.order).cust].join(' ').toLowerCase().includes(q))r.push(['hammer','Job',order(j.order).cust,j.id,`#job/${j.id}`])});
+  box.innerHTML=r.slice(0,10).map(x=>`<div class="r" onclick="${x[4].startsWith('javascript:')?x[4].slice(11):`nav('${x[4]}')`};$('#sres').classList.remove('show')">${ic(x[0],'color:var(--pri)')}<div><b>${esc(x[2])}</b><div class="small muted">${x[1]} · ${x[3]}</div></div></div>`).join('')||'<div class="empty">Nothing found</div>';box.classList.add('show');lucide.createIcons()}
+window.addEventListener('hashchange',route);
+function route(){const h=(location.hash.slice(1)||'home').split('/');UI.route=h[0];UI.param=h[1]||'';render()}
+function render(){const key=UI.route==='job'?'jobs':UI.route;if(!PAGES[UI.route]||!allowed().includes(key)){UI.route='home'}renderNav();$('#view').innerHTML=PAGES[UI.route]();lucide.createIcons();window.scrollTo(0,0)}
+function rerender(){renderNav();$('#view').innerHTML=PAGES[UI.route]();lucide.createIcons()}
+const head=(t,p,acts='',icon)=>`<div class="ph"><div><h1>${icon?`<span class="ico" style="width:34px;height:34px;background:${icon[1]}22;color:${icon[1]}">${ic(icon[0])}</span>`:''}${t}</h1><p>${p}</p></div><div class="acts">${acts}</div></div>`;
+const modHead=(key,p,acts)=>{const m=MODS.find(x=>x[0]===key);return head(m[1],p,acts,[m[2],m[3]])};
+const tabs=(key,list)=>`<div class="tabs">${list.map(([k,l])=>`<button class="${UI[key]===k?'on':''}" onclick="UI.${key}='${k}';rerender()">${l}</button>`).join('')}</div>`;
+const seg=(key,list,cb='rerender()')=>`<div class="seg">${list.map(([k,l])=>`<button class="${String(UI[key])===String(k)?'on':''}" onclick="UI.${key}=${typeof k==='boolean'?k:`'${k}'`};${cb}">${l}</button>`).join('')}</div>`;
+const fsearch=(key,ph,body)=>`<div class="fsearch">${ic('search')}<input class="inp" placeholder="${ph}" value="${esc(UI[key])}" oninput="UI.${key}=this.value;document.getElementById('${body}').innerHTML=${body}();lucide.createIcons()"></div>`;
+const fsel=(key,label,opts,body)=>`<select class="sel" onchange="UI.${key}=this.value;document.getElementById('${body}').innerHTML=${body}();lucide.createIcons()"><option value="">${label}</option>${opts.map(o=>`<option ${UI[key]===o?'selected':''}>${o}</option>`).join('')}</select>`;
+const emptyRow=(cols,msg,icon='inbox')=>`<tr><td colspan="${cols}"><div class="empty">${ic(icon)}<div>${msg}</div></div></td></tr>`;
+
+/* =========================================================
+   PAGES
+   ========================================================= */
+const PAGES={};
+
+/* ---------- HOME (Zoho-style dashboard) ---------- */
+PAGES.home=()=>{
+  const t=todayISO(),mon=t.slice(0,7),al=allowed();
+  const inPeriod=iso=>{if(UI.period==='month')return iso.slice(0,7)===mon;return daysBetween(iso.slice(0,10),t)<+UI.period};
+  const f=[['Leads',S.leads.filter(l=>inPeriod(l.date)).length,'#F43F5E'],['Quotations',S.quotations.filter(q=>inPeriod(q.at)).length,'#F59E0B'],['Approved',S.quotations.filter(q=>inPeriod(q.at)&&['Approved','Converted'].includes(q.status)).length,'#22C55E'],['Orders',S.orders.filter(o=>inPeriod(o.date)).length,'#3B82F6']];
+  const fmx=Math.max(1,...f.map(x=>x[1]));
+  const salesMonth=S.orders.filter(o=>o.date.slice(0,7)===mon).reduce((a,o)=>a+total(o),0);
+  const recvMonth=S.payments.filter(p=>p.at.slice(0,7)===mon).reduce((a,p)=>a+p.amount,0);
+  const balance=S.orders.filter(o=>!o.delivered||true).reduce((a,o)=>a+total(o)-paidOf(o.id),0);
+  const running=S.jobs.filter(j=>jobStatus(j)!=='Completed');
+  const late=running.filter(j=>jobDue(j)<0);
+  const src={};S.leads.forEach(l=>src[l.source]=(src[l.source]||0)+1);
+  const srcCol={'Walk-in':'#3B82F6','Phone':'#14B8A6','WhatsApp':'#22C55E','Website':'#6366F1','Social Media':'#EC4899','Referral':'#F59E0B','Other':'#94A3B8'};
+  const totalLeads=S.leads.length;let acc=0;const R=52,C=2*Math.PI*R;
+  const arcs=Object.entries(src).map(([k,v])=>{const len=v/totalLeads*C;const s=`<circle r="${R}" cx="70" cy="70" fill="none" stroke="${srcCol[k]||'#94A3B8'}" stroke-width="22" stroke-dasharray="${len} ${C-len}" stroke-dashoffset="${-acc}" transform="rotate(-90 70 70)"/>`;acc+=len;return s}).join('');
+  // tasks
+  const tasks=[];
+  late.forEach(j=>tasks.push([`Job ${j.id} is late – ${order(j.order).cust}`,fmtD(order(j.order).expected),'Overdue','High',`nav('job/${j.id}')`,'jobs']));
+  running.filter(j=>{const d=jobDue(j);return d>=0&&d<=5}).forEach(j=>tasks.push([`Finish job ${j.id} – ${order(j.order).cust}`,fmtD(order(j.order).expected),'Due soon','High',`nav('job/${j.id}')`,'jobs']));
+  S.quotations.filter(q=>q.status==='Approved').forEach(q=>tasks.push([`Convert ${q.id} (${q.cust}) to order`,'Today','Waiting','Medium',`nav('quotations')`,'quotations']));
+  S.leads.filter(l=>l.status==='Open').forEach(l=>tasks.push([`Call ${l.name} about ${l.req||'enquiry'}`,'Today','Open','Medium',`nav('leads')`,'leads']));
+  if(!S.att[t]||!Object.keys(S.att[t]).length)tasks.push(['Mark today\'s attendance','Today','Not done','Medium',`nav('attendance')`,'attendance']);
+  lowStock().slice(0,2).forEach(m=>tasks.push([`Buy more ${m.name} (${m.stock} ${m.unit} left)`,'This week','Low stock','Low',`nav('materials')`,'materials']));
+  const tv=tasks.filter(x=>al.includes(x[5]));
+  const prCls={High:'p-red',Medium:'p-amber',Low:'p-gray'};
+  const hr=new Date().getHours();const greet=hr<12?'Good morning':hr<17?'Good afternoon':'Good evening';
+  const stageCount={};S.jobs.forEach(j=>j.items.forEach(i=>{const n=S.template[i.stage];stageCount[n]=(stageCount[n]||0)+1}));const itemsTotal=Object.values(stageCount).reduce((a,b)=>a+b,0)||1;
+  const kpi=(l,v,s,go,icon,col)=>`<div class="card kpi" onclick="${al.includes(go)?`nav('${go}')`:''}"><div style="display:flex;justify-content:space-between"><div class="l">${l}</div><span class="ico" style="background:${col}1F;color:${col}">${ic(icon)}</span></div><div class="v tnum">${v}</div><div class="s">${s}</div></div>`;
+  return `
+  ${!S.guideHidden?`<div class="card mb" style="padding:18px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><div><b style="font-size:15px">New here? This is how work flows 👇</b><div class="small muted">Click any step to open it. You can hide this box anytime.</div></div><button class="btn sm ghost" onclick="S.guideHidden=true;save();rerender()">${ic('x')}Hide</button></div>
+    <div class="steps5">${[['Lead','Note the enquiry','leads'],['Quotation','Send the price','quotations'],['Order','Customer says yes','orders'],['Production','Make it in the workshop','jobs'],['Payment','Collect the balance','billing']].map((s,i)=>`<div class="s5" onclick="nav('${s[2]}')"><div class="n">${i+1}</div><b>${s[0]}</b><small>${s[1]}</small></div>`).join('')}</div></div>`:''}
+  <div class="grid g-1-2 mb">
+    <div class="card welcome">${av(ROLES[S.role],'lg')}<div><div class="hi">${greet}! 👋</div><h2>${esc(ROLES[S.role])}</h2><div class="small muted">${new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}</div></div>
+      <div class="stat"><div class="small muted">Orders this month</div><div class="v">${S.orders.filter(o=>o.date.slice(0,7)===mon).length}</div><div class="small"><span class="up">▲</span> <span class="muted">${S.quotations.filter(q=>q.at.slice(0,7)===mon).length} quotations</span></div></div></div>
+    <div class="card"><div class="card-h"><h3>My tasks for today</h3><span class="sub">${tv.length} things to do</span></div>
+      <div class="tw" style="max-height:208px;overflow:auto;margin-top:8px"><table class="tasks"><thead><tr><th>What to do</th><th>Due</th><th>Status</th><th>Priority</th></tr></thead><tbody>
+      ${tv.map(x=>`<tr class="click" onclick="${x[4]}"><td class="b">${esc(x[0])}</td><td>${x[1]}</td><td>${x[2]}</td><td><span class="pill ${prCls[x[3]]}">${x[3]}</span></td></tr>`).join('')||emptyRow(4,'Nothing pending. Great job! 🎉','party-popper')}</tbody></table></div></div>
+  </div>
+  <div class="grid g4 mb">
+    ${kpi('Sales this month',inr(salesMonth),`<span class="up">▲</span> ${S.orders.filter(o=>o.date.slice(0,7)===mon).length} orders booked`,'orders','trending-up','#3B82F6')}
+    ${kpi('Money received',inr(recvMonth),`${S.payments.filter(p=>p.at.slice(0,7)===mon).length} payment(s) this month`,'billing','wallet','#16A34A')}
+    ${kpi('Balance to collect',inr(balance),'From all running orders','billing','hand-coins','#F59E0B')}
+    ${kpi('Jobs in workshop',running.length,late.length?`<span class="c-red b">${late.length} late</span> · ${running.length-late.length} on time`:'All on time','jobs','hammer','#F97316')}
+  </div>
+  <div class="grid g-2-1 mb">
+    <div class="card"><div class="card-h"><h3>Enquiry to order</h3>${seg('period',[['7','7 days'],['30','30 days'],['90','90 days'],['month','This month']])}</div>
+      <div class="card-b funnel">${f.map(x=>`<div class="row"><span>${x[0]}</span><div class="tr"><i style="width:${x[1]/fmx*100}%;background:${x[2]}"></i></div><b class="tnum">${x[1]}</b></div>`).join('')}
+      <div class="small muted">Out of every ${f[0][1]||0} enquiries, ${f[3][1]} became orders in this period.</div></div></div>
+    <div class="card target"><div class="card-h"><h3>Sales target – this month</h3><button class="btn sm ghost" onclick="askInput('Sales target','Monthly sales target (₹)',S.target,v=>{S.target=+v||S.target;save();rerender()},'number')">${ic('pencil')}Edit</button></div>
+      <div class="card-b"><div class="small muted">Target: ${inr(S.target)}</div><div class="tr"><i style="width:${Math.min(100,salesMonth/S.target*100)}%"></i><span>${inr(salesMonth)}</span></div>
+      <div class="small" style="margin-top:10px"><b>${Math.round(salesMonth/S.target*100)}%</b> <span class="muted">done · ${inr(Math.max(0,S.target-salesMonth))} more to reach target</span></div></div></div>
+  </div>
+  <div class="grid g3 mb">
+    <div class="card"><div class="card-h"><h3>Leads by source</h3><a class="link small" href="#leads">View leads</a></div><div class="card-b donut-wrap">
+      <svg width="140" height="140" viewBox="0 0 140 140">${arcs}<text x="70" y="66" text-anchor="middle" font-size="22" font-weight="800" fill="#1E2433">${totalLeads}</text><text x="70" y="84" text-anchor="middle" font-size="11" fill="#6B7385">leads</text></svg>
+      <div class="legend">${Object.entries(src).map(([k,v])=>`<div><i style="background:${srcCol[k]}"></i>${k}<b>${v} (${Math.round(v/totalLeads*100)}%)</b></div>`).join('')}</div></div></div>
+    <div class="card"><div class="card-h"><h3>Workshop status</h3><a class="link small" href="#jobs">Open jobs</a></div><div class="card-b">
+      <div class="small muted">${itemsTotal} products being made</div>
+      <div class="stagebar">${Object.entries(stageCount).map(([k,v])=>`<i title="${k}: ${v}" style="width:${v/itemsTotal*100}%;background:${stageColor(k)}"></i>`).join('')}</div>
+      <div class="legend">${Object.entries(stageCount).map(([k,v])=>`<div><i style="background:${stageColor(k)}"></i>${k}<b>${v}</b></div>`).join('')}</div></div></div>
+    <div class="card"><div class="card-h"><h3>Needs attention</h3></div><div class="card-b">
+      ${late.map(j=>`<div class="help bad" style="margin-bottom:8px;cursor:pointer" onclick="nav('job/${j.id}')">${ic('alarm-clock')}<div><b>${j.id}</b> is late by ${-jobDue(j)} days<br><span class="small">${esc(order(j.order).cust)} · ${order(j.order).id}</span></div></div>`).join('')}
+      ${lowStock().slice(0,3).map(m=>`<div class="help warn" style="margin-bottom:8px">${ic('package')}<div>Low stock: <b>${esc(m.name)}</b> – ${m.stock} ${m.unit} left</div></div>`).join('')}
+      ${!late.length&&!lowStock().length?`<div class="help good">${ic('check-circle-2')}Everything looks fine today.</div>`:''}</div></div>
+  </div>
+  <div class="card"><div class="card-h"><h3>Recent orders</h3><a class="link small" href="#orders">See all orders</a></div><div class="tw" style="margin-top:8px"><table><thead><tr><th>Customer</th><th>Order</th><th class="right">Total</th><th class="right">Balance</th><th>Status</th><th>Delivery date</th></tr></thead><tbody>
+    ${S.orders.slice(0,5).map(o=>`<tr class="click" onclick="viewOrder('${o.id}')"><td><div class="who">${av(o.cust)}<div><b>${esc(o.cust)}</b><small>${o.cat}</small></div></div></td><td class="code">${o.id}</td><td class="right tnum b">${inr(total(o))}</td><td class="right tnum c-amber b">${inr(total(o)-paidOf(o.id))}</td><td>${pill(orderStatus(o))}</td><td>${fmtD(o.expected)} ${dueChip(jobDue(jobOfOrder(o.id)||{items:[{stage:99}]}))}</td></tr>`).join('')}</tbody></table></div></div>`;
+};
+
+/* ---------- LEADS ---------- */
+PAGES.leads=()=>modHead('leads','Write down every enquiry here – just name, mobile and what they want. Then turn it into a quotation with one click.',`<button class="btn pri" onclick="newLead()">${ic('plus')}New Lead</button>`)+`
+  <div class="grid g4 mb">${[['All leads',S.leads.length,'#64748B'],['Open – call them',S.leads.filter(l=>l.status==='Open').length,'#3B82F6'],['Quotation sent',S.leads.filter(l=>l.status==='Quoted').length,'#F59E0B'],['Became customers',S.leads.filter(l=>l.status==='Converted').length,'#16A34A']].map(x=>`<div class="card kpi" style="cursor:default"><div class="l">${x[0]}</div><div class="v" style="color:${x[2]}">${x[1]}</div></div>`).join('')}</div>
+  <div class="card"><div class="bar">${fsearch('leadQ','Search name, mobile or place…','leadRows')}${fsel('leadSt','All statuses',['Open','Contacted','Quoted','Converted','Lost'],'leadRows')}${fsel('leadSrc','All sources',SOURCES,'leadRows')}</div>
+  <div class="tw"><table><thead><tr><th>Customer</th><th>Lead no.</th><th>Place</th><th>Requirement</th><th>Source</th><th>Status</th><th>Date</th><th></th></tr></thead><tbody id="leadRows">${leadRows()}</tbody></table></div>
+  <div class="tfoot">Showing ${S.leads.length} lead(s)<span>Tip: tap a row to edit</span></div></div>`;
+function leadRows(){const q=UI.leadQ.toLowerCase();const r=S.leads.filter(l=>(!UI.leadSt||l.status===UI.leadSt)&&(!UI.leadSrc||l.source===UI.leadSrc)&&(!q||[l.name,l.mobile,l.place,l.req,l.id].join(' ').toLowerCase().includes(q)));
+  return r.map(l=>`<tr class="click" onclick="newLead('${l.id}')"><td><div class="who">${av(l.name)}<div><b>${esc(title(l.name))}</b><small>${esc(l.mobile)}</small></div></div></td><td class="code">${l.id}</td><td>${esc(l.place)}</td><td>${esc(l.req||'—')}</td><td><span class="pill p-gray">${l.source}</span></td><td>${pill(l.status)}</td><td>${fmtD(l.date)}</td>
+   <td class="right" onclick="event.stopPropagation()">${['Open','Contacted'].includes(l.status)?`<button class="btn sm pri" onclick="openQuoteForm({lead:'${l.id}'})">${ic('file-plus')}Make Quotation</button>`:''}</td></tr>`).join('')||emptyRow(8,'No leads match. Try clearing the search.','search-x')}
+function newLead(id){const l=S.leads.find(x=>x.id===id)||{};const nid=id||'SVW-LEAD-'+pad(S.seq.lead,6);
+  openModal(id?'Edit Lead':'New Lead',`<div class="help">${ic('info')}<div>Only 4 things are needed. Takes 30 seconds.</div></div><div class="form">
+  <div class="fld"><label>Customer name <em>*</em></label><input class="inp" id="l_name" value="${esc(l.name||'')}" placeholder="e.g. Arun Kumar"></div>
+  <div class="fld"><label>Mobile number <em>*</em></label><input class="inp" id="l_mob" inputmode="tel" value="${esc(l.mobile||'')}" placeholder="e.g. 98765 43210"></div>
+  <div class="fld"><label>Place <em>*</em></label><input class="inp" id="l_place" value="${esc(l.place||'')}" placeholder="e.g. Palakkad"></div>
+  <div class="fld"><label>What do they want?</label><input class="inp" id="l_req" value="${esc(l.req||'')}" placeholder="e.g. Main door + wardrobe"></div>
+  <div class="fld full"><label>How did they find us? <em>*</em></label><div class="chips">${SOURCES.map((s,i)=>`<label><input type="radio" name="l_src" value="${s}" ${(l.source||'Phone')===s?'checked':''}><span>${s}</span></label>`).join('')}</div></div>
+  ${id?`<div class="fld"><label>Status</label><select class="sel" id="l_st">${['Open','Contacted','Quoted','Converted','Lost'].map(s=>`<option ${l.status===s?'selected':''}>${s}</option>`).join('')}</select></div>`:''}
+  <div class="fld ${id?'':'full'}"><label>Notes (optional)</label><input class="inp" id="l_notes" value="${esc(l.notes||'')}" placeholder="e.g. Call after 6 pm"></div></div>`,
+  `${id?`<button class="btn red" style="margin-right:auto" onclick="ask('Delete this lead?',()=>{S.leads=S.leads.filter(x=>x.id!=='${id}');save();rerender();toast('Lead deleted','trash-2')})">${ic('trash-2')}Delete</button>`:''}<button class="btn" onclick="closeModal()">Cancel</button><button class="btn pri" onclick="saveLead('${id||''}')">${ic('check')}${id?'Save changes':'Create Lead'}</button>`)}
+function saveLead(id){const name=val('l_name'),mobile=val('l_mob'),place=val('l_place');if(!name||!mobile||!place)return toast('Please fill name, mobile and place','alert-circle');
+  const data={name,mobile,place,req:val('l_req'),source:document.querySelector('input[name=l_src]:checked').value,notes:val('l_notes')};
+  if(id){Object.assign(S.leads.find(x=>x.id===id),data,{status:val('l_st')})}else{const nid='SVW-LEAD-'+pad(S.seq.lead++,6);S.leads.unshift({id:nid,...data,status:'Open',date:todayISO()});audit(`Lead ${nid} created for ${name}`)}
+  save();closeModal();rerender();toast(id?'Lead updated':'Lead created – now make a quotation when ready')}
+
+/* ---------- CUSTOMERS ---------- */
+PAGES.customers=()=>modHead('customers','Customers are added automatically when a quotation becomes an order. Start a new quotation for any old customer from here.')+`
+  <div class="card"><div class="bar">${fsearch('cusQ','Search customer number, name or mobile…','cusRows')}<span class="muted small b">${S.customers.length} records</span></div>
+  <div class="tw"><table><thead><tr><th>Customer</th><th>Customer no.</th><th>Mobile</th><th>Category</th><th>Source</th><th>Added on</th><th>Orders</th><th>Status</th><th></th></tr></thead><tbody id="cusRows">${cusRows()}</tbody></table></div></div>`;
+function cusRows(){const q=UI.cusQ.toLowerCase();return S.customers.filter(c=>!q||[c.id,c.name,c.mobile].join(' ').toLowerCase().includes(q)).map(c=>{const os=S.orders.filter(o=>o.cust.toLowerCase()===c.name.toLowerCase());return`<tr><td><div class="who">${av(c.name)}<div><b>${esc(title(c.name))}</b><small>${esc(c.company)}</small></div></div></td><td class="code">${c.id}</td><td>${esc(c.mobile)}</td><td><span class="pill p-amber">${c.cat}</span></td><td>${c.source}</td><td>${fmtDT(c.at)}</td><td>${os.length?os.map(o=>`<span class="link small" onclick="viewOrder('${o.id}')">${o.id}</span>`).join(', '):'—'}</td><td>${pill(c.active?'Active':'Inactive')}</td><td class="right"><button class="btn sm" onclick="openQuoteForm({customer:'${c.id}'})">${ic('file-plus')}New Quotation</button></td></tr>`}).join('')||emptyRow(9,'No customers found','users')}
+
+/* ---------- QUOTATIONS ---------- */
+const QCOL={Draft:'#F8A48F',Sent:'#F7D58B',Approved:'#93E2A6',Converted:'#A9C4FF',Rejected:'#D4D8E2'};
+PAGES.quotations=()=>{const st=['Draft','Sent','Approved','Converted','Rejected'];
+  return modHead('quotations','Make a price quote for the customer. Pick items from the Item Master and the price fills in by itself.',`${seg('quoView',[['list','☰ List'],['board','▦ Board']])}<button class="btn pri" onclick="openQuoteForm()">${ic('plus')}New Quotation</button>`)+
+  (UI.quoView==='board'?`<div class="help">${ic('mouse-pointer-click')}<div>Each column is a step. Click a card to open it and move it forward.</div></div><div class="kan">${st.map(s=>{const qs=S.quotations.filter(q=>q.status===s);return`<div class="kcol"><div class="kh" style="background:${QCOL[s]};border-color:${QCOL[s]}"><div class="t">${s==='Converted'?'Converted to order':s}<span>${qs.length}</span></div><div class="a">${inr(qs.reduce((a,q)=>a+total(q),0),1)}</div></div><div class="kbody">
+    ${qs.map(q=>`<div class="kc" onclick="viewQuote('${q.id}')"><div class="t">${esc(q.cust)}</div><div class="m">${q.id} · ${q.cat}</div><div class="f"><b class="tnum">${inr(total(q),1)}</b>${av(q.cust)}</div></div>`).join('')||'<div class="kc" style="cursor:default"><div class="ghost-row" style="width:70%"></div><div class="ghost-row" style="width:45%"></div></div><div class="small muted" style="text-align:center;padding:6px">Nothing here</div>'}</div></div>`}).join('')}</div>`
+  :`<div class="card"><div class="bar">${seg('quoMine',[[false,'All quotations'],[true,'My quotations']])}${fsearch('quoQ','Search quotation number or customer…','quoRows')}${fsel('quoSt','All statuses',st,'quoRows')}${fsel('quoCat','All categories',CATS,'quoRows')}</div>
+  <div class="tw"><table><thead><tr><th>Quotation</th><th>Customer</th><th>Category</th><th>Status</th><th class="right">Total</th><th>Created</th><th></th></tr></thead><tbody id="quoRows">${quoRows()}</tbody></table></div>
+  <div class="tfoot">Showing ${S.quotations.length} quotations</div></div>`)};
+function quoRows(){const q=UI.quoQ.toLowerCase();const me=ROLES[S.role];return S.quotations.filter(x=>(!UI.quoMine||x.sales===me||S.role==='Admin')&&(!UI.quoSt||x.status===UI.quoSt)&&(!UI.quoCat||x.cat===UI.quoCat)&&(!q||[x.id,x.cust,x.company].join(' ').toLowerCase().includes(q))).map(x=>`<tr class="click" onclick="viewQuote('${x.id}')"><td class="code b" style="font-size:13px">${x.id}</td><td><div class="who">${av(x.cust)}<div><b>${esc(x.cust)}</b><small>${esc(x.company||'—')}</small></div></div></td><td><span class="pill p-amber">${x.cat}</span></td><td>${pill(x.status==='Converted'?'Converted':x.status).replace('>Converted<','>Converted to order<')}${x.order?`<div><span class="link small" onclick="event.stopPropagation();viewOrder('${x.order}')">Order ${x.order}</span></div>`:''}</td><td class="right tnum b">${inr(total(x),1)}</td><td>${fmtDT(x.at)}</td><td class="right" onclick="event.stopPropagation()">${quoAction(x)}</td></tr>`).join('')||emptyRow(7,'No quotations found','file-search')}
+function quoAction(x){return x.status==='Draft'?`<button class="btn sm" onclick="setQuo('${x.id}','Sent')">${ic('send')}Mark as sent</button>`:x.status==='Sent'?`<button class="btn sm green" onclick="setQuo('${x.id}','Approved')">${ic('thumbs-up')}Customer agreed</button>`:x.status==='Approved'?`<button class="btn sm pri" onclick="convertQuote('${x.id}')">${ic('arrow-right-circle')}Make Order</button>`:''}
+function setQuo(id,s){const q=S.quotations.find(x=>x.id===id);q.status=s;audit(`Quotation ${id} marked ${s}`);const l=S.leads.find(x=>x.id===q.lead);if(l&&s==='Rejected')l.status='Lost';save();closeModal();rerender();toast(`${id} is now ${s}`)}
+function viewQuote(id){const q=S.quotations.find(x=>x.id===id),t=totals(q);
+  openModal(`${q.id} ${pill(q.status)}`,`<div class="grid g2 mb"><dl class="kv"><dt>Customer</dt><dd>${esc(q.cust)}</dd><dt>Company</dt><dd>${esc(q.company||'—')}</dd><dt>Mobile</dt><dd>${esc(q.mobile||'—')}</dd><dt>Category</dt><dd>${q.cat}</dd></dl><dl class="kv"><dt>Sales person</dt><dd>${esc(q.sales||'—')}</dd><dt>Created</dt><dd>${fmtDT(q.at)}</dd><dt>Delivery by</dt><dd>${fmtD(q.expected)}</dd>${q.order?`<dt>Order</dt><dd><span class="link" onclick="viewOrder('${q.order}')">${q.order}</span></dd>`:''}</dl></div>
+  ${docLinesTable(q)}<div class="totals" style="margin-top:12px"><div><span class="muted">Subtotal</span><b>${inr(t.sub,1)}</b></div>${t.disc?`<div><span class="muted">Discount ${q.discPct}%</span><b>−${inr(t.disc,1)}</b></div>`:''}${t.tax?`<div><span class="muted">Tax ${q.taxPct}%</span><b>${inr(t.tax,1)}</b></div>`:''}<div class="gt"><span>Grand total</span><span>${inr(t.total,1)}</span></div></div>
+  <div class="sec" style="margin-top:16px"><h4>Notes / terms</h4><div class="small muted" style="white-space:pre-line">${esc(q.notes||'—')}</div></div>`,
+  `<button class="btn" style="margin-right:auto" onclick="printDoc('quote','${q.id}')">${ic('printer')}View quotation</button>${['Draft','Sent'].includes(q.status)?`<button class="btn red" onclick="setQuo('${q.id}','Rejected')">${ic('x')}Customer said no</button><button class="btn" onclick="openQuoteForm({edit:'${q.id}'})">${ic('pencil')}Edit</button>`:''}${quoAction(q).replace(/btn sm/g,'btn')}`,'wide')}
+function docLinesTable(d){return`<div class="card tw" style="box-shadow:none"><table><thead><tr><th>Item</th><th class="right">Qty</th><th class="right">Rate</th><th class="right">Disc</th><th class="right">Amount</th></tr></thead><tbody>${d.lines.map(l=>`<tr><td class="wrap"><b>${esc(l.name)}</b>${l.desc?`<div class="small muted">${esc(l.desc)}</div>`:''}${l.measure?`<div class="small muted">Measurement: ${esc(l.measure)}</div>`:''}</td><td class="right">${l.qty} ${l.unit||''}</td><td class="right tnum">${inr(l.rate)}</td><td class="right">${l.disc?l.disc+'%':'—'}</td><td class="right tnum b">${inr(lineAmt(l),1)}</td></tr>`).join('')}${(d.charges||[]).map(c=>`<tr><td colspan="4" class="muted">${esc(c.label)}</td><td class="right tnum b">${inr(c.amount)}</td></tr>`).join('')}</tbody></table></div>`}
+/* quotation / direct order form */
+let QF=null;
+function openQuoteForm(o={}){
+  const ed=o.edit?S.quotations.find(x=>x.id===o.edit):null;const l=S.leads.find(x=>x.id===o.lead)||{};const c=S.customers.find(x=>x.id===o.customer)||{};
+  QF={mode:o.direct?'direct':ed?'edit':'new',edit:o.edit,lead:o.lead,cat:ed?.cat||c.cat||'Furniture',lines:ed?ed.lines.map(x=>({...x})):[],charges:ed?ed.charges.map(x=>({...x})):[]};
+  if(!QF.lines.length)QF.lines.push(blankLine());
+  const v=(k,d='')=>esc(ed?.[k]??d);
+  openModal(o.direct?'Direct Order (no quotation)':ed?`Edit ${ed.id}`:'New Quotation',`
+  <div class="help">${ic('lightbulb')}<div><b>3 easy steps:</b> 1) Customer details &nbsp;2) Pick the items &nbsp;3) Check total and save. Fields with <span class="c-red">*</span> are needed.</div></div>
+  <div class="sec"><h4>${ic('user','width:16px')} 1. Customer details</h4><div class="form f3">
+    <div class="fld"><label>Customer name <em>*</em></label><input class="inp" id="q_cust" value="${v('cust',l.name||c.name||'')}" placeholder="Customer name"></div>
+    <div class="fld"><label>Mobile <em>*</em></label><input class="inp" id="q_mob" value="${v('mobile',l.mobile||c.mobile||'')}" placeholder="Mobile number"></div>
+    <div class="fld"><label>Email</label><input class="inp" id="q_email" value="${v('email')}" placeholder="Optional"></div>
+    <div class="fld"><label>Company</label><input class="inp" id="q_comp" value="${v('company',c.company||'')}" placeholder="Optional"></div>
+    <div class="fld"><label>Address</label><input class="inp" id="q_addr" value="${v('address',l.place||'')}" placeholder="Optional"></div>
+    <div class="fld"><label>Category <em>*</em></label><select class="sel" id="q_cat" onchange="QF.cat=this.value;document.getElementById('q_notes').value=NOTES[this.value];drawLines()">${CATS.map(x=>`<option ${QF.cat===x?'selected':''}>${x}</option>`).join('')}</select></div>
+    <div class="fld"><label>Sales person</label><input class="inp" id="q_sales" value="${v('sales',ROLES[S.role]==='System Administrator'?'':ROLES[S.role])}" placeholder="Sales person name"></div>
+    <div class="fld"><label>Expected delivery date <em>*</em></label><input class="inp" type="date" id="q_exp" value="${v('expected',addDays(todayISO(),21))}"></div>
+    ${o.direct?`<div class="fld"><label>Advance received (₹)</label><input class="inp" type="number" id="q_adv" value="0"></div>`:''}
+  </div>${l.req?`<div class="help warn" style="margin:12px 0 0">${ic('message-square')}Customer asked for: <b>${esc(l.req)}</b></div>`:''}</div>
+  <div class="sec"><h4>${ic('list','width:16px')} 2. Items</h4><div class="lines" id="qlines"></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn sm" onclick="QF.lines.push(blankLine());drawLines()">${ic('plus')}Add item</button><button class="btn sm" onclick="QF.charges.push({label:'Transport Charge',amount:0});drawLines()">${ic('truck')}Add extra charge (polish, transport…)</button></div></div>
+  <div class="sec"><h4>${ic('calculator','width:16px')} 3. Price & notes</h4><div class="grid g2"><div>
+    <div class="form"><div class="fld"><label>Discount %</label><input class="inp" type="number" id="q_disc" value="${v('discPct',0)}" oninput="drawTotals()"></div><div class="fld"><label>Tax / GST %</label><input class="inp" type="number" id="q_tax" value="${v('taxPct',0)}" oninput="drawTotals()"></div>
+    <div class="fld full"><label>Notes / terms (printed on quotation)</label><textarea class="inp" id="q_notes" rows="6">${esc(ed?.notes||NOTES[QF.cat])}</textarea></div></div></div>
+    <div class="totals" id="qtot"></div></div></div>`,
+  `<button class="btn" onclick="closeModal()">Cancel</button><button class="btn pri" onclick="saveQuote()">${ic('check')}${o.direct?'Create Order':ed?'Save changes':'Create Quotation'}</button>`,'wide');drawLines()}
+function blankLine(){return{item:'',name:'',desc:'',qty:1,rate:0,disc:0,unit:'pcs',measure:''}}
+function drawLines(){const items=S.items.filter(i=>i.active&&i.cat===QF.cat);
+  $('#qlines').innerHTML=`<div class="ln hd"><span>Item (pick from list or type)</span><span>Qty</span><span>Rate ₹</span><span>Disc %</span><span class="right">Amount</span><span></span></div>`+QF.lines.map((l,k)=>`<div class="ln">
+   <div><select class="sel" style="width:100%" onchange="pickItem(${k},this.value)"><option value="">— Pick item (${QF.cat}) —</option>${items.map(i=>`<option value="${i.id}" ${l.item===i.id?'selected':''}>${esc(i.name)} · ${inr(i.price)}</option>`).join('')}<option value="_c" ${!l.item&&l.name?'selected':''}>✎ Type my own item</option></select>
+     ${!l.item&&l.name!==undefined&&(l._c||(!l.item&&l.name))?`<input class="inp" style="width:100%;margin-top:6px" placeholder="Item name" value="${esc(l.name)}" oninput="QF.lines[${k}].name=this.value">`:''}
+     ${l.item||l.name?`<input class="inp" style="width:100%;margin-top:6px;height:32px;font-size:12.5px" placeholder="Measurement / size (optional)" value="${esc(l.measure||'')}" oninput="QF.lines[${k}].measure=this.value">`:''}</div>
+   <input class="inp" type="number" min="1" value="${l.qty}" oninput="QF.lines[${k}].qty=+this.value||0;drawTotals();this.closest('.ln').querySelector('.amt').textContent=inr(lineAmt(QF.lines[${k}]),1)">
+   <input class="inp" type="number" value="${l.rate}" oninput="QF.lines[${k}].rate=+this.value||0;drawTotals();this.closest('.ln').querySelector('.amt').textContent=inr(lineAmt(QF.lines[${k}]),1)">
+   <input class="inp" type="number" value="${l.disc||0}" oninput="QF.lines[${k}].disc=+this.value||0;drawTotals();this.closest('.ln').querySelector('.amt').textContent=inr(lineAmt(QF.lines[${k}]),1)">
+   <div class="amt tnum">${inr(lineAmt(l),1)}</div><button class="ibtn" style="width:34px;height:34px" title="Remove" onclick="QF.lines.splice(${k},1);if(!QF.lines.length)QF.lines.push(blankLine());drawLines()">${ic('trash-2','width:15px')}</button></div>`).join('')
+   +QF.charges.map((c,k)=>`<div class="ln"><select class="sel" onchange="QF.charges[${k}].label=this.value">${['Polishing Charge','Transport Charge','Fixing Charge','Other Charge'].map(x=>`<option ${c.label===x?'selected':''}>${x}</option>`).join('')}</select><span></span><input class="inp" type="number" value="${c.amount}" oninput="QF.charges[${k}].amount=+this.value||0;drawTotals()"><span></span><span class="muted small right">extra</span><button class="ibtn" style="width:34px;height:34px" onclick="QF.charges.splice(${k},1);drawLines()">${ic('trash-2','width:15px')}</button></div>`).join('');
+  lucide.createIcons();drawTotals()}
+function pickItem(k,id){const l=QF.lines[k];if(id==='_c'){Object.assign(l,{item:'',name:'',desc:'',_c:true});}else{const i=S.items.find(x=>x.id===id);if(i)Object.assign(l,{item:i.id,name:i.name,desc:i.desc,rate:i.price,unit:i.unit,_c:false});else Object.assign(l,blankLine())}drawLines()}
+function drawTotals(){const t=totals({lines:QF.lines,charges:QF.charges,discPct:num('q_disc'),taxPct:num('q_tax')});$('#qtot').innerHTML=`<div><span class="muted">Subtotal</span><b class="tnum">${inr(t.sub,1)}</b></div><div><span class="muted">Discount</span><b class="tnum">−${inr(t.disc,1)}</b></div><div><span class="muted">Tax</span><b class="tnum">${inr(t.tax,1)}</b></div><div class="gt"><span>Grand total</span><span class="tnum">${inr(t.total,1)}</span></div>`}
+function saveQuote(){const cust=val('q_cust'),mobile=val('q_mob'),exp=val('q_exp');if(!cust||!mobile||!exp)return toast('Please fill customer name, mobile and delivery date','alert-circle');
+  const lines=QF.lines.filter(l=>l.name&&l.qty>0).map(({_c,...x})=>x);if(!lines.length)return toast('Add at least one item','alert-circle');
+  const doc={cust,mobile,email:val('q_email'),company:val('q_comp'),address:val('q_addr'),cat:val('q_cat'),sales:val('q_sales'),expected:exp,lines,charges:QF.charges.filter(c=>c.amount>0),discPct:num('q_disc'),taxPct:num('q_tax'),notes:$('#q_notes').value};
+  if(QF.mode==='direct'){const id=createOrder(doc,'DIRECT',num('q_adv'));closeModal();if(UI.route!=='orders')nav('orders');else rerender();setTimeout(()=>viewOrder(id),50);return}
+  if(QF.mode==='edit'){Object.assign(S.quotations.find(x=>x.id===QF.edit),doc);save();closeModal();rerender();return toast('Quotation updated')}
+  const id='SVW-QUO-'+pad(S.seq.quo++,6);S.quotations.unshift({id,...doc,status:'Draft',at:nowISO(),order:'',lead:QF.lead});
+  const l=S.leads.find(x=>x.id===QF.lead);if(l)l.status='Quoted';audit(`Quotation ${id} created for ${cust}`);save();closeModal();
+  if(UI.route!=='quotations')nav('quotations');else rerender();toast(`${id} created. Print it or mark it as sent.`)}
+function convertQuote(id){const q=S.quotations.find(x=>x.id===id);
+  openModal('Make this an Order',`<div class="help good">${ic('party-popper')}<div>Customer agreed! <b>${esc(q.cust)}</b> · ${inr(total(q),1)}. Each item will go to the workshop as a job.</div></div><div class="form">
+  <div class="fld"><label>Delivery date <em>*</em></label><input class="inp" type="date" id="c_exp" value="${q.expected||addDays(todayISO(),21)}"></div><div class="fld"><label>Advance received now (₹)</label><input class="inp" type="number" id="c_adv" value="0"><div class="hint">Leave 0 if no advance yet</div></div>
+  <div class="fld full"><label>Delivery address</label><input class="inp" id="c_addr" value="${esc(q.address||'')}"></div></div>`,
+  `<button class="btn" onclick="closeModal()">Cancel</button><button class="btn green" onclick="doConvert('${id}')">${ic('check')}Confirm Order</button>`)}
+function doConvert(id){const q=S.quotations.find(x=>x.id===id);const exp=val('c_exp');if(!exp)return toast('Pick a delivery date','alert-circle');
+  const oid=createOrder({...q,expected:exp,address:val('c_addr')||q.address},q.id,num('c_adv'));q.status='Converted';q.order=oid;
+  const l=S.leads.find(x=>x.id===q.lead);if(l)l.status='Converted';save();closeModal();rerender()}
+function createOrder(doc,src,adv){const id='ORD'+pad(S.seq.ord++,6);
+  S.orders.unshift({id,cust:doc.cust,mobile:doc.mobile,address:doc.address||'',cat:doc.cat,src,date:nowISO(),expected:doc.expected,sales:doc.sales||'',lines:doc.lines.map(x=>({...x})),charges:(doc.charges||[]).map(x=>({...x})),discPct:doc.discPct||0,taxPct:doc.taxPct||0,delivered:false});
+  if(!S.customers.some(c=>c.name.toLowerCase()===doc.cust.toLowerCase()))S.customers.unshift({id:'SVW-CUS-'+pad(S.seq.cus++,6),name:doc.cust,company:doc.company||'',mobile:doc.mobile,cat:doc.cat,source:src==='DIRECT'?'Direct':'Quotation',at:nowISO(),active:true});
+  const jid='JOB-2026-'+pad(S.seq.job++,4);
+  S.jobs.unshift({id:jid,order:id,manager:'HARIDAS',created:nowISO(),items:doc.lines.map(l=>({name:l.name,qty:l.qty,stage:0,team:'',history:[{stage:'Assigned',at:nowISO(),by:ROLES[S.role]}]})),cut:[],costs:[],history:[{at:nowISO(),by:ROLES[S.role],msg:'Order assigned to production'}]});
+  S.orderLog[id]=[{at:nowISO(),msg:`Assigned to production (${jid})`},{at:nowISO(),msg:src==='DIRECT'?'Direct order created':`Order created from quotation ${src}`}];
+  if(adv>0){S.payments.push({id:'PAY-'+pad(S.payments.length+1,4),order:id,at:nowISO(),amount:adv,mode:'UPI',by:ROLES[S.role]});S.orderLog[id].unshift({at:nowISO(),msg:`Advance of ${inr(adv)} received`})}
+  audit(`Order ${id} created (${src}) and sent to production as ${jid}`);save();toast(`Order ${id} created and sent to the workshop (${jid})`);return id}
+
+/* ---------- ITEM MASTER ---------- */
+PAGES.items=()=>modHead('items','Your product list with prices. These show up when making a quotation, so you never type the same thing twice.',`<button class="btn pri" onclick="editItem()">${ic('plus')}Add Item</button>`)+`
+  <div class="card"><div class="bar">${fsearch('itemQ','Search item name or description…','itemRows')}${fsel('itemCat','All categories',CATS,'itemRows')}</div>
+  <div class="tw"><table><thead><tr><th></th><th>Item</th><th>Category</th><th>Price basis</th><th>Unit</th><th class="right">Price</th><th>Status</th><th></th></tr></thead><tbody id="itemRows">${itemRows()}</tbody></table></div><div class="tfoot">${S.items.length} items</div></div>`;
+function itemRows(){const q=UI.itemQ.toLowerCase();return S.items.filter(i=>(!UI.itemCat||i.cat===UI.itemCat)&&(!q||[i.name,i.desc,i.unit].join(' ').toLowerCase().includes(q))).map(i=>`<tr class="click" onclick="editItem('${i.id}')"><td style="width:58px"><div class="imgph">${ic(i.cat==='Joinery'?'door-open':i.cat==='Interior'?'tv':'armchair')}</div></td><td class="wrap"><b>${esc(i.name)}</b><div class="small muted">${esc(i.desc)}</div></td><td><span class="pill p-amber">${i.cat}</span></td><td>${i.basis==='Per Sqft'?'Per square feet':'Per piece'}</td><td>${i.unit}</td><td class="right tnum b">${inr(i.price,1)}</td><td>${pill(i.active?'Active':'Inactive')}</td><td>${ic('chevron-right','color:#B8C0D2')}</td></tr>`).join('')||emptyRow(8,'No items found','box')}
+function editItem(id){const i=S.items.find(x=>x.id===id)||{cat:'Furniture',basis:'Per Piece',unit:'pcs',active:true};
+  openModal(id?'Edit Item':'Add Item',`<div class="form"><div class="fld full"><label>Item name <em>*</em></label><input class="inp" id="i_name" value="${esc(i.name||'')}" placeholder="e.g. 6.5X6 PILLER COT"></div>
+  <div class="fld full"><label>Description</label><input class="inp" id="i_desc" value="${esc(i.desc||'')}" placeholder="e.g. Full teak wood, bottom round"></div>
+  <div class="fld"><label>Category <em>*</em></label><select class="sel" id="i_cat">${CATS.map(c=>`<option ${i.cat===c?'selected':''}>${c}</option>`).join('')}</select></div>
+  <div class="fld"><label>Price basis</label><select class="sel" id="i_basis" onchange="document.getElementById('i_unit').value=this.value==='Per Sqft'?'sq ft':'pcs'"><option ${i.basis==='Per Piece'?'selected':''}>Per Piece</option><option ${i.basis==='Per Sqft'?'selected':''}>Per Sqft</option></select></div>
+  <div class="fld"><label>Unit</label><input class="inp" id="i_unit" value="${esc(i.unit)}"></div><div class="fld"><label>Price (₹) <em>*</em></label><input class="inp" type="number" id="i_price" value="${i.price||''}"></div>
+  <label class="check full"><input type="checkbox" id="i_act" ${i.active?'checked':''}>Active – show this item in quotations</label></div>`,
+  `<button class="btn" onclick="closeModal()">Cancel</button><button class="btn pri" onclick="saveItem('${id||''}')">${ic('check')}Save</button>`)}
+function saveItem(id){const name=val('i_name'),price=num('i_price');if(!name||!price)return toast('Name and price are needed','alert-circle');const d={name,desc:val('i_desc'),cat:val('i_cat'),basis:val('i_basis'),unit:val('i_unit')||'pcs',price,active:$('#i_act').checked};
+  if(id)Object.assign(S.items.find(x=>x.id===id),d);else S.items.unshift({id:'IT'+(S.seq.item++),...d});save();closeModal();rerender();toast('Item saved')}
+
+/* ---------- ORDERS ---------- */
+PAGES.orders=()=>modHead('orders','All confirmed orders. Track money received, balance and delivery here.',`<button class="btn green" onclick="openQuoteForm({direct:true})">${ic('plus')}Direct Order</button>`)+`
+  <div class="grid g4 mb">${[['Total order value',inr(S.orders.reduce((a,o)=>a+total(o),0)),'#3B82F6'],['Money received',inr(S.payments.reduce((a,p)=>a+p.amount,0)),'#16A34A'],['Balance to collect',inr(S.orders.reduce((a,o)=>a+total(o)-paidOf(o.id),0)),'#D97706'],['In production',S.orders.filter(o=>orderStatus(o)==='In Production').length+' orders','#7C3AED']].map(x=>`<div class="card kpi" style="cursor:default"><div class="l">${x[0]}</div><div class="v tnum" style="color:${x[2]}">${x[1]}</div></div>`).join('')}</div>
+  <div class="card"><div class="bar">${seg('ordMine',[[false,'All orders'],[true,'My orders']])}${fsearch('ordQ','Search order, customer or mobile…','ordRows')}${fsel('ordCat','All categories',CATS,'ordRows')}${fsel('ordSt','All statuses',['Confirmed','In Production','Ready for Delivery','Delivered'],'ordRows')}</div>
+  <div class="tw"><table><thead><tr><th>Order #</th><th>Customer</th><th>Category</th><th>From</th><th class="right">Total</th><th class="right">Paid</th><th class="right">Balance</th><th>Status</th><th>Date</th><th></th></tr></thead><tbody id="ordRows">${ordRows()}</tbody></table></div></div>`;
+function ordRows(){const q=UI.ordQ.toLowerCase();const me=ROLES[S.role];return S.orders.filter(o=>(!UI.ordMine||o.sales===me||S.role==='Admin')&&(!UI.ordCat||o.cat===UI.ordCat)&&(!UI.ordSt||orderStatus(o)===UI.ordSt)&&(!q||[o.id,o.cust,o.mobile,o.src].join(' ').toLowerCase().includes(q))).map(o=>{const t=total(o),p=paidOf(o.id);return`<tr class="click" onclick="viewOrder('${o.id}')"><td class="code b" style="font-size:13px">${o.id}</td><td><div class="who">${av(o.cust)}<div><b>${esc(o.cust)}</b><small>${esc(o.mobile||'')}</small></div></div></td><td>${o.cat}</td><td><span class="pill p-gray code">${o.src}</span></td><td class="right tnum b">${inr(t)}</td><td class="right tnum c-green">${inr(p)}</td><td class="right tnum b ${t-p>0?'c-amber':'c-green'}">${inr(t-p)}</td><td>${pill(orderStatus(o))}</td><td>${fmtD(o.date)}</td><td>${ic('eye','color:var(--pri)')}</td></tr>`}).join('')||emptyRow(10,'No orders match your filters','search-x')}
+function viewOrder(id){const o=order(id);if(!o)return;const t=total(o),p=paidOf(id),j=jobOfOrder(id),st=orderStatus(o);
+  const mcost=j?j.cut.reduce((a,c)=>a+pieceCost(c)*(lineQty(j,c.item)),0):0;
+  const pays=S.payments.filter(x=>x.order===id);const log=S.orderLog[id]||[];
+  const steps=[['Order confirmed',true],['In workshop',!!j&&j.items.some(i=>i.stage>0)],['Ready',st==='Ready for Delivery'||st==='Delivered'],['Delivered',st==='Delivered'],['Fully paid',p>=t]];
+  openModal(`${o.id} ${pill(st)}`,`
+  <div class="small muted" style="margin:-6px 0 14px">Created ${fmtDT(o.date)} · ${o.src==='DIRECT'?'Direct order':'From quotation '+o.src}</div>
+  <div class="mini mb"><div><small>Total amount</small><b class="tnum">${inr(t)}</b></div><div><small>Paid</small><b class="tnum c-green">${inr(p)}</b></div><div><small>Balance due</small><b class="tnum c-amber">${inr(t-p)}</b></div><div><small>Material cost</small><b class="tnum">${inr(mcost)}</b></div></div>
+  <div class="card mb" style="box-shadow:none;padding:14px"><div class="track">${steps.map(s=>`<span class="${s[1]?'done':''}">${s[1]?ic('check'):''}${s[0]}</span>`).join(ic('chevron-right','width:14px;color:#B8C0D2;align-self:center'))}</div></div>
+  <div class="grid g2 mb"><div class="sec" style="margin:0"><h4>${ic('user','width:16px')}Customer</h4><dl class="kv"><dt>Name</dt><dd>${esc(o.cust)}</dd><dt>Mobile</dt><dd>${esc(o.mobile||'—')}</dd><dt>Delivery address</dt><dd>${esc(o.address||'—')}</dd></dl></div>
+  <div class="sec" style="margin:0"><h4>${ic('calendar','width:16px')}Dates</h4><dl class="kv"><dt>Order date</dt><dd>${fmtD(o.date)}</dd><dt>Delivery by</dt><dd>${fmtD(o.expected)} ${dueChip(j?jobDue(j):null)}</dd><dt>Sales person</dt><dd>${esc(o.sales||'—')}</dd>${j?`<dt>Workshop job</dt><dd><a class="link" href="#job/${j.id}" onclick="closeModal()">${j.id}</a></dd>`:''}</dl></div></div>
+  <div class="sec"><h4>${ic('list','width:16px')}Order items</h4><div class="card tw" style="box-shadow:none"><table><thead><tr><th>Item</th><th>Category</th><th class="right">Qty</th><th class="right">Unit price</th><th class="right">Total</th><th>Workshop stage</th></tr></thead><tbody>
+   ${o.lines.map((l,k)=>`<tr><td class="wrap b">${esc(l.name)}</td><td>${o.cat}</td><td class="right">${l.qty} ${l.unit||''}</td><td class="right tnum">${inr(l.rate)}</td><td class="right tnum b">${inr(lineAmt(l))}</td><td>${j&&j.items[k]?stagePill(S.template[j.items[k].stage]):'—'}</td></tr>`).join('')}</tbody></table></div></div>
+  ${j&&j.cut.length?`<div class="sec"><h4>${ic('scissors','width:16px')}Cutting list · ${j.cut.length} pieces · ${inr(mcost)} material</h4>${cutTable(j,false)}</div>`:''}
+  <div class="grid g2"><div class="sec"><h4>${ic('wallet','width:16px')}Payment history</h4>${pays.map(x=>`<div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--line2)"><div><b class="c-green">${inr(x.amount)}</b> via ${x.mode}<div class="small muted">${fmtDT(x.at)} · by ${esc(x.by)}</div></div><span class="code">${x.id}</span></div>`).join('')||'<div class="small muted">No payments yet</div>'}</div>
+  <div class="sec"><h4>${ic('history','width:16px')}Activity</h4><div class="timeline">${log.map(e=>`<div class="ev">${esc(e.msg)}<small>${fmtDT(e.at)}</small></div>`).join('')||'<div class="small muted">No activity yet</div>'}</div></div></div>`,
+  `<button class="btn" style="margin-right:auto" onclick="printDoc('invoice','${o.id}')">${ic('printer')}View invoice</button>${st==='Ready for Delivery'?`<button class="btn" onclick="markDelivered('${o.id}')">${ic('truck')}Mark as delivered</button>`:''}${t-p>0&&allowed().some(k=>['billing','orders'].includes(k))?`<button class="btn green" onclick="recordPayment('${o.id}')">${ic('indian-rupee')}Record payment</button>`:''}`,'drawer')}
+function markDelivered(id){const o=order(id);o.delivered=true;(S.orderLog[id]=S.orderLog[id]||[]).unshift({at:nowISO(),msg:'Delivered to customer'});audit(`Order ${id} delivered`);save();viewOrder(id);rerender();toast('Marked as delivered 🚚')}
+const lineQty=(j,name)=>(j.items.find(i=>i.name===name)||{qty:1}).qty;
+
+/* ---------- PAYMENTS ---------- */
+function recordPayment(oid){const open=S.orders.filter(o=>total(o)-paidOf(o.id)>0);if(!open.length)return toast('No balance pending on any order 🎉');const sel=oid||open[0].id,o=order(sel);
+  openModal('Record Payment',`<div class="form"><div class="fld full"><label>Which order?</label><select class="sel" id="r_o" onchange="const o=order(this.value);document.getElementById('r_a').value=total(o)-paidOf(o.id)">${open.map(x=>`<option value="${x.id}" ${x.id===sel?'selected':''}>${x.id} · ${esc(x.cust)} · balance ${inr(total(x)-paidOf(x.id))}</option>`).join('')}</select></div>
+  <div class="fld"><label>Amount received (₹) <em>*</em></label><input class="inp" type="number" id="r_a" value="${total(o)-paidOf(o.id)}"></div><div class="fld"><label>Date</label><input class="inp" type="date" id="r_d" value="${todayISO()}"></div>
+  <div class="fld full"><label>Paid by</label><div class="chips">${['UPI','Cash','Bank Transfer','Cheque'].map((m,i)=>`<label><input type="radio" name="r_m" value="${m}" ${i?'':'checked'}><span>${m}</span></label>`).join('')}</div></div></div>`,
+  `<button class="btn" onclick="closeModal()">Cancel</button><button class="btn green" onclick="savePayment()">${ic('check')}Save payment</button>`)}
+function savePayment(){const a=num('r_a'),oid=val('r_o');if(a<=0)return toast('Enter the amount','alert-circle');const bal=total(order(oid))-paidOf(oid);if(a>bal)return toast(`Amount is more than the balance (${inr(bal)}). Please check.`,'alert-circle');
+  const m=document.querySelector('input[name=r_m]:checked').value;S.payments.push({id:'PAY-'+pad(S.payments.length+1,4),order:oid,at:val('r_d')+nowISO().slice(10),amount:a,mode:m,by:ROLES[S.role]});
+  (S.orderLog[oid]=S.orderLog[oid]||[]).unshift({at:nowISO(),msg:`Payment of ${inr(a)} received via ${m}. Balance ${inr(bal-a)}`});audit(`Payment ${inr(a)} received for ${oid} via ${m}`);save();closeModal();rerender();toast(`${inr(a)} saved for ${oid}`)}
+
+/* ---------- MATERIALS ---------- */
+PAGES.materials=()=>{const low=lowStock();return modHead('materials','Wood, hardware, glue and everything you buy. Red means stock is low – time to buy more.',`<button class="btn green" onclick="editMaterial()">${ic('plus')}Add Material & Stock</button>`)+
+  (low.length?`<div class="help warn">${ic('alert-triangle')}<div><b>${low.length} items are running low:</b> ${low.map(m=>esc(m.name)).join(', ')}</div></div>`:'')+`
+  <div class="card"><div class="bar">${fsearch('matQ','Search materials…','matRows')}${fsel('matType','All types',MTYPES,'matRows')}</div>
+  <div class="tw"><table><thead><tr><th>Name</th><th>Type</th><th>Unit</th><th class="right">Price / unit</th><th class="right">In stock</th><th>Status</th><th>Added</th><th class="right">Actions</th></tr></thead><tbody id="matRows">${matRows()}</tbody></table></div><div class="tfoot">${S.materials.length} materials · stock value ${inr(S.materials.reduce((a,m)=>a+m.stock*m.price,0))}</div></div>`};
+const TYPE_PILL={Timber:'p-amber',Plywood:'p-amber',Hardware:'p-blue',Adhesive:'p-violet',Polish:'p-teal',Other:'p-gray'};
+function matRows(){const q=UI.matQ.toLowerCase();return S.materials.filter(m=>(!UI.matType||m.type===UI.matType)&&(!q||[m.name,m.desc].join(' ').toLowerCase().includes(q))).map(m=>{const low=m.stock<m.min;return`<tr><td><b>${esc(m.name)}</b>${m.desc?`<div class="small muted">${esc(m.desc)}</div>`:''}</td><td><span class="pill ${TYPE_PILL[m.type]}">${m.type}</span></td><td>${m.unit}</td><td class="right tnum b">${inr(m.price,1)}</td><td class="right"><span class="pill ${low?'p-red':'p-green'}">${m.stock} ${m.unit}</span></td><td>${low?'<span class="pill p-red">Buy more</span>':pill(m.active?'Active':'Inactive')}</td><td>${fmtD(m.at)}</td><td class="right"><button class="btn sm" title="Add stock" onclick="addStock('${m.id}')">${ic('package-plus')}Add stock</button> <button class="btn sm ghost" title="Edit" onclick="editMaterial('${m.id}')">${ic('pencil')}</button></td></tr>`}).join('')||emptyRow(8,'No materials found','package')}
+function editMaterial(id){const m=mat(id)||{type:'Timber',unit:'cft',active:true,min:5};
+  openModal(id?'Edit Material':'Add Material & Stock',`<div class="form"><div class="fld full"><label>Material name <em>*</em></label><input class="inp" id="m_name" value="${esc(m.name||'')}" placeholder="e.g. Teak Plank"></div>
+  <div class="fld full"><label>Short description</label><input class="inp" id="m_desc" value="${esc(m.desc||'')}"></div>
+  <div class="fld"><label>Type</label><select class="sel" id="m_type">${MTYPES.map(t=>`<option ${m.type===t?'selected':''}>${t}</option>`).join('')}</select></div><div class="fld"><label>Unit</label><input class="inp" id="m_unit" value="${esc(m.unit)}" placeholder="cft, box, kg, piece…"></div>
+  <div class="fld"><label>Price per unit (₹) <em>*</em></label><input class="inp" type="number" id="m_price" value="${m.price||''}"></div><div class="fld"><label>${id?'Stock now':'Opening stock'}</label><input class="inp" type="number" id="m_stock" value="${m.stock||0}"></div>
+  <div class="fld"><label>Warn me when stock is below</label><input class="inp" type="number" id="m_min" value="${m.min}"></div></div>`,
+  `${id?`<button class="btn red" style="margin-right:auto" onclick="ask('Delete this material?',()=>{S.materials=S.materials.filter(x=>x.id!=='${id}');save();rerender()})">${ic('trash-2')}Delete</button>`:''}<button class="btn" onclick="closeModal()">Cancel</button><button class="btn pri" onclick="saveMaterial('${id||''}')">${ic('check')}Save</button>`)}
+function saveMaterial(id){const name=val('m_name'),price=num('m_price');if(!name||!price)return toast('Name and price are needed','alert-circle');const d={name,desc:val('m_desc'),type:val('m_type'),unit:val('m_unit')||'piece',price,stock:num('m_stock'),min:num('m_min')};
+  if(id)Object.assign(mat(id),d);else S.materials.unshift({id:'MT'+(S.seq.mat++),...d,active:true,at:todayISO()});save();closeModal();rerender();toast('Material saved')}
+function addStock(id){const m=mat(id);openModal(`Add stock – ${esc(m.name)}`,`<div class="help">${ic('info')}Now in stock: <b>${m.stock} ${m.unit}</b></div><div class="form"><div class="fld"><label>Quantity bought (${m.unit})</label><input class="inp" type="number" id="as_q" value="1"></div><div class="fld"><label>Price per unit (₹)</label><input class="inp" type="number" id="as_p" value="${m.price}"></div><div class="fld full"><label>Supplier (optional)</label><input class="inp" id="as_s" placeholder="e.g. Palakkad Timber Depot"></div></div>`,
+  `<button class="btn" onclick="closeModal()">Cancel</button><button class="btn green" onclick="const q=num('as_q');if(q<=0)return;const m=mat('${id}');m.stock+=q;m.price=num('as_p')||m.price;audit('Stock added: '+q+' '+m.unit+' '+m.name);save();closeModal();rerender();toast(q+' '+m.unit+' added to '+m.name)">${ic('check')}Add to stock</button>`)}
+
+/* ---------- ALL JOBS ---------- */
+PAGES.jobs=()=>{const urgent=S.jobs.filter(j=>{const d=jobDue(j);return d!=null&&d<=5}).length;
+  return modHead('jobs','Every order becomes a job in the workshop. Each product moves step by step: cutting → carpentry → polish → QC → complete.',seg('jobView',[['list','☰ List'],['board','▦ Board']]))+
+  `<div class="card"><div class="bar">${fsearch('jobQ','Search job, order or customer…','jobBody')}${fsel('jobCat','All categories',CATS,'jobBody')}${fsel('jobStage','All stages',S.template,'jobBody')}<button class="btn ${UI.jobUrgent?'pri':''}" onclick="UI.jobUrgent=!UI.jobUrgent;rerender()">${ic('flame')}Urgent <span class="pill ${UI.jobUrgent?'':'p-red'}" style="padding:0 7px">${urgent}</span></button></div>
+  <div id="jobBody">${jobBody()}</div></div>`};
+function jobFiltered(){const q=UI.jobQ.toLowerCase();return S.jobs.filter(j=>{const o=order(j.order);const d=jobDue(j);return(!UI.jobCat||o.cat===UI.jobCat)&&(!UI.jobStage||j.items.some(i=>S.template[i.stage]===UI.jobStage))&&(!UI.jobUrgent||(d!=null&&d<=5))&&(!q||[j.id,j.order,o.cust].join(' ').toLowerCase().includes(q))}).sort((a,b)=>(jobDue(a)??999)-(jobDue(b)??999))}
+function jobBody(){const js=jobFiltered();
+  if(UI.jobView==='board'){const cols=S.template.map((n,i)=>({n,i,cards:[]}));js.forEach(j=>j.items.forEach((it,k)=>cols[it.stage].cards.push({j,it,k})));
+    return`<div class="kan" style="padding:14px">${cols.map(c=>`<div class="kcol" style="min-width:240px;width:240px"><div class="kh" style="background:#fff;border-color:${stageColor(c.n)}"><div class="t">${c.n}<span>${c.cards.length}</span></div></div><div class="kbody">${c.cards.map(x=>`<div class="kc" onclick="moveItem('${x.j.id}',${x.k})"><div class="t">${esc(x.it.name)}</div><div class="m">${esc(order(x.j.order).cust)} · ${x.j.id}</div><div class="f"><span class="small muted">Qty ${x.it.qty}</span>${c.i<DONE()?`<span class="link small">Move ${ic('arrow-right','width:13px;vertical-align:-2px')}</span>`:ic('check-circle-2','color:var(--green)')}</div></div>`).join('')||'<div class="small muted" style="text-align:center;padding:10px">Empty</div>'}</div></div>`).join('')}</div>`}
+  return`<div class="tw"><table><thead><tr><th>Job</th><th>Order</th><th>Customer</th><th>Sales person</th><th>Category</th><th>Status</th><th>Progress</th><th>Team</th><th>Delivery by</th></tr></thead><tbody>
+  ${js.map(j=>{const o=order(j.order);const d=jobDue(j);const prog=j.items.reduce((a,i)=>a+i.stage,0)/(j.items.length*DONE());const teams=[...new Set(j.items.map(i=>i.team).filter(Boolean))];return`<tr class="click" onclick="nav('job/${j.id}')" style="${d!=null&&d<0?'background:#FFF6F6':''}"><td class="code b" style="font-size:13px">${j.id}</td><td class="code">${j.order}</td><td><div class="who">${av(o.cust)}<b>${esc(o.cust)}</b></div></td><td>${esc(o.sales)}</td><td><span class="pill p-amber">${o.cat}</span></td><td>${pill(jobStatus(j))}</td><td><div style="display:flex;align-items:center;gap:8px"><div class="prog"><i style="width:${prog*100}%"></i></div><span class="small muted">${Math.round(prog*100)}%</span></div></td><td>${teams.length?teams.map(esc).join(', '):'<span class="muted">Not set</span>'}</td><td>${fmtD(o.expected)} ${dueChip(d)}</td></tr>`}).join('')||emptyRow(9,'No jobs match','hammer')}</tbody></table></div>`}
+
+/* ---------- JOB DETAIL ---------- */
+PAGES.job=()=>{const j=job(UI.param);if(!j){UI.route='jobs';return PAGES.jobs()}const o=order(j.order);const d=jobDue(j);
+  const counts={};j.items.forEach(i=>{const n=S.template[i.stage];counts[n]=(counts[n]||0)+1});
+  const minStage=Math.min(...j.items.map(i=>i.stage));const atMin=j.items.filter(i=>i.stage===minStage).length;
+  const cost={material:0,labour:0,additional:0};j.costs.forEach(c=>cost[c.bucket]+=c.amount);const planned=j.cut.reduce((a,c)=>a+pieceCost(c)*lineQty(j,c.item),0);
+  const byStage={};j.costs.forEach(c=>{byStage[c.stage]=byStage[c.stage]||{material:0,labour:0,additional:0};byStage[c.stage][c.bucket]+=c.amount});
+  return`<div class="crumb"><a href="#jobs">All Jobs</a>${ic('chevron-right','width:13px')}${j.id}</div>
+  ${head(`${j.id} ${pill(jobStatus(j))}`,`Order <span class="link" onclick="viewOrder('${o.id}')">${o.id}</span> · ${esc(o.cust)} · ${o.cat} ${dueChip(d)}`,`<button class="btn" onclick="printDoc('cut','${j.id}')">${ic('printer')}View cutting list</button>`)}
+  <div class="grid g4 mb">${[['Delivery by',fmtD(o.expected),'calendar'],['Created',fmtD(j.created),'clock'],['Production manager',j.manager,'user-cog'],['Sales person',o.sales||'—','user']].map(x=>`<div class="card kpi" style="cursor:default"><div class="l" style="display:flex;gap:6px;align-items:center">${ic(x[2],'width:15px;color:var(--muted)')}${x[0]}</div><div class="v" style="font-size:18px">${esc(x[1])}</div></div>`).join('')}</div>
+  <div class="card mb"><div class="card-h"><h3>${ic('git-branch')}Products & their stage</h3><span class="sub">${Object.entries(counts).map(([k,v])=>`${k} ${v}`).join(' · ')}</span></div>
+   <div class="card-b" style="padding-top:10px">
+   ${minStage<DONE()?`<div class="help" style="justify-content:space-between;align-items:center;flex-wrap:wrap">${ic('fast-forward')}<div style="flex:1"><b>Move together:</b> ${atMin} product(s) in <b>${S.template[minStage]}</b> can all go to <b>${S.template[minStage+1]}</b>.${S.template[minStage]==='QC'?' (QC must be checked one by one.)':''}</div>${S.template[minStage]!=='QC'?`<button class="btn sm pri" onclick="bulkMove('${j.id}',${minStage})">Move all → ${S.template[minStage+1]}</button>`:''}</div>`:`<div class="help good">${ic('party-popper')}All products are complete! Mark the order as delivered from the order page.</div>`}
+   ${j.items.map((it,k)=>`<div style="display:flex;align-items:center;gap:14px;padding:12px 0;border-top:1px solid var(--line2);flex-wrap:wrap"><div style="min-width:220px;flex:1"><b>${esc(it.name)}</b> <span class="muted small">× ${it.qty}</span><div class="small muted">Last move: ${esc(it.history[it.history.length-1].stage)} · ${fmtDT(it.history[it.history.length-1].at)}${it.team?' · '+esc(it.team):''}</div></div>
+     <div class="dots" title="${it.stage+1} of ${S.template.length}">${S.template.map((s,i)=>`<i class="${i<it.stage?'d':i===it.stage?'c':''}" title="${s}"></i>`).join('')}</div>${stagePill(S.template[it.stage])}
+     ${it.stage<DONE()?`<button class="btn sm ${S.template[it.stage]==='QC'?'green':''}" onclick="moveItem('${j.id}',${k})">${S.template[it.stage]==='QC'?ic('clipboard-check')+'Do QC check':'Move to '+S.template[it.stage+1]+' '+ic('arrow-right')}</button>`:ic('check-circle-2','color:var(--green)')}</div>`).join('')}</div></div>
+  <div class="card mb"><div class="card-h"><h3>${ic('list')}Order items</h3></div><div class="tw" style="margin-top:8px"><table><thead><tr><th>Item</th><th>Category</th><th class="right">Qty</th><th class="right">Unit price</th><th class="right">Line total</th></tr></thead><tbody>${o.lines.map(l=>`<tr><td class="b">${esc(l.name)}</td><td>${o.cat}</td><td class="right">${l.qty} ${l.unit||''}</td><td class="right tnum">${inr(l.rate)}</td><td class="right tnum b">${inr(lineAmt(l))}</td></tr>`).join('')}</tbody></table></div></div>
+  <div class="card mb"><div class="card-h"><h3>${ic('scissors')}Cutting list</h3><button class="btn sm pri" onclick="addPiece('${j.id}')">${ic('plus')}Add piece</button></div>
+   <div class="card-b" style="padding-top:8px"><div class="small muted mb">Size is for 1 item (Length in feet, Width & Thickness in inches). Volume in cft and cost are worked out automatically.</div>${j.cut.length?cutTable(j,true):'<div class="empty">'+ic('scissors')+'<div>No pieces yet. Click <b>Add piece</b> to start the cutting list.</div></div>'}</div></div>
+  <div class="grid g2 mb"><div class="card"><div class="card-h"><h3>${ic('calculator')}Product cost</h3><button class="btn sm" onclick="recordCost('${j.id}')">${ic('plus')}Record cost</button></div><div class="card-b">
+    <div class="mini mb">${[['Material',cost.material],['Labour',cost.labour],['Other charges',cost.additional],['Product cost',cost.material+cost.labour+cost.additional]].map(x=>`<div><small>${x[0]}</small><b class="tnum">${inr(x[1])}</b></div>`).join('')}</div>
+    <div class="small muted mb">Cutting plan (planned): ${inr(planned)} – for reference only, not added to the actual cost.</div>
+    ${Object.keys(byStage).length?`<div class="tw"><table><thead><tr><th>Stage</th><th class="right">Material</th><th class="right">Labour</th><th class="right">Other</th></tr></thead><tbody>${Object.entries(byStage).map(([s,v])=>`<tr><td>${stagePill(s)}</td><td class="right tnum">${v.material?inr(v.material):'—'}</td><td class="right tnum">${v.labour?inr(v.labour):'—'}</td><td class="right tnum">${v.additional?inr(v.additional):'—'}</td></tr>`).join('')}</tbody></table></div>`:''}</div></div>
+   <div class="card"><div class="card-h"><h3>${ic('receipt')}Charges & history</h3></div><div class="card-b">
+    ${j.costs.map(c=>`<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line2)"><div><b>${c.bucket==='labour'?'👷 ':''}${esc(c.label)}</b> · ${esc(c.item)}<div class="small muted">${esc(c.stage)} · ${fmtD(c.at)}${c.note?' · '+esc(c.note):''}</div></div><b class="tnum">${inr(c.amount)}</b></div>`).join('')||'<div class="small muted mb">No charges recorded yet</div>'}
+    <div class="timeline" style="margin-top:14px">${j.history.slice(0,8).map(e=>`<div class="ev">${esc(e.msg)}<small>${esc(e.by)} · ${fmtDT(e.at)}</small></div>`).join('')}</div></div></div></div>`};
+function cutTable(j,edit){const groups={};j.cut.forEach((c,i)=>(groups[c.item]=groups[c.item]||[]).push([c,i]));let tv=0,tc=0;
+  const rows=Object.entries(groups).map(([item,ps])=>{const q=lineQty(j,item);const gv=ps.reduce((a,[c])=>a+cft(c)*q,0),gc=ps.reduce((a,[c])=>a+pieceCost(c)*q,0);tv+=gv;tc+=gc;
+   return`<tr style="background:#FAFBFD"><td colspan="5" class="b">${esc(item)} <span class="muted">×${q}</span></td><td class="right b tnum">${gv.toFixed(4)} cft</td><td class="right b tnum">${inr(gc)}</td>${edit?'<td></td>':''}</tr>`+ps.map(([c,i])=>{const m=mat(c.mat)||{};return`<tr><td style="padding-left:28px">${esc(c.piece)}</td><td class="small">${esc(m.name||'?')} <span class="muted">₹${m.price}/${m.unit}</span></td><td class="tnum">${c.L} ft × ${c.W} in × ${c.T} in</td><td class="right">${c.qty}</td><td class="right muted">×${q}</td><td class="right tnum">${(cft(c)*q).toFixed(4)}</td><td class="right tnum">${inr(pieceCost(c)*q)}</td>${edit?`<td class="right"><button class="btn sm ghost" onclick="S.jobs.find(x=>x.id==='${j.id}').cut.splice(${i},1);save();rerender()">${ic('trash-2','width:14px')}</button></td>`:''}</tr>`}).join('')}).join('');
+  return`<div class="card tw" style="box-shadow:none"><table><thead><tr><th>Piece</th><th>Material</th><th>Size (L × W × T)</th><th class="right">Qty</th><th class="right">Order</th><th class="right">Volume</th><th class="right">Cost</th>${edit?'<th></th>':''}</tr></thead><tbody>${rows}<tr><td colspan="5" class="b">PLANNED MATERIAL TOTAL</td><td class="right b tnum">${tv.toFixed(4)} cft</td><td class="right b tnum">${inr(tc)}</td>${edit?'<td></td>':''}</tr></tbody></table></div>`}
+function addPiece(jid){const j=job(jid);const timber=S.materials.filter(m=>['Timber','Plywood'].includes(m.type));
+  openModal('Add piece to cutting list',`<div class="form"><div class="fld full"><label>For which product?</label><select class="sel" id="p_item">${j.items.map(i=>`<option>${esc(i.name)}</option>`).join('')}</select></div>
+  <div class="fld"><label>Piece name <em>*</em></label><input class="inp" id="p_name" placeholder="e.g. Leg, Top Plank"></div><div class="fld"><label>Material</label><select class="sel" id="p_mat">${timber.map(m=>`<option value="${m.id}">${esc(m.name)} · ₹${m.price}/${m.unit}</option>`).join('')}</select></div>
+  <div class="fld"><label>Length (feet)</label><input class="inp" type="number" step="0.25" id="p_L" value="6" oninput="pv()"></div><div class="fld"><label>Width (inches)</label><input class="inp" type="number" step="0.25" id="p_W" value="4" oninput="pv()"></div>
+  <div class="fld"><label>Thickness (inches)</label><input class="inp" type="number" step="0.25" id="p_T" value="2" oninput="pv()"></div><div class="fld"><label>How many pieces?</label><input class="inp" type="number" id="p_Q" value="1" oninput="pv()"></div>
+  <div class="full help good" id="p_prev"></div></div>`,`<button class="btn" onclick="closeModal()">Cancel</button><button class="btn pri" onclick="savePiece('${jid}')">${ic('check')}Add piece</button>`);
+  $('#p_mat').onchange=pv;pv()}
+function pv(){const p={L:num('p_L'),W:num('p_W'),T:num('p_T'),qty:num('p_Q'),mat:val('p_mat')};$('#p_prev').innerHTML=`${ic('calculator')}<div>Volume: <b>${cft(p).toFixed(4)} cft</b> · Cost: <b>${inr(pieceCost(p))}</b></div>`;lucide.createIcons()}
+function savePiece(jid){const name=val('p_name');if(!name)return toast('Enter piece name','alert-circle');const j=job(jid);j.cut.push({item:val('p_item'),piece:name,mat:val('p_mat'),L:num('p_L'),W:num('p_W'),T:num('p_T'),qty:num('p_Q')||1});
+  const mc=j.cut.reduce((a,c)=>a+pieceCost(c)*lineQty(j,c.item),0);(S.orderLog[j.order]=S.orderLog[j.order]||[]).unshift({at:nowISO(),msg:`Cutting list updated (${jid}): ${j.cut.length} pieces, material cost ${inr(mc)}`});save();closeModal();rerender();toast('Piece added')}
+function recordCost(jid){const j=job(jid);openModal('Record cost',`<div class="form"><div class="fld"><label>Type</label><select class="sel" id="rc_l"><option value="material|Material">Material used</option>${S.labels.filter(l=>l.active).map(l=>`<option value="${l.bucket}|${esc(l.name)}">${esc(l.name)}</option>`).join('')}</select></div>
+  <div class="fld"><label>Product</label><select class="sel" id="rc_i">${j.items.map(i=>`<option>${esc(i.name)}</option>`).join('')}</select></div><div class="fld"><label>Amount (₹) <em>*</em></label><input class="inp" type="number" id="rc_a"></div><div class="fld"><label>Note</label><input class="inp" id="rc_n" placeholder="e.g. 1500 × 2 days"></div></div>`,
+  `<button class="btn" onclick="closeModal()">Cancel</button><button class="btn pri" onclick="saveCost('${jid}')">${ic('check')}Save</button>`)}
+function saveCost(jid){const a=num('rc_a');if(a<=0)return toast('Enter amount','alert-circle');const j=job(jid);const[b,l]=val('rc_l').split('|');const it=j.items.find(i=>i.name===val('rc_i'));j.costs.push({label:l,bucket:b,item:val('rc_i'),stage:S.template[it.stage],at:todayISO(),amount:a,note:val('rc_n')});j.history.unshift({at:nowISO(),by:ROLES[S.role],msg:`${l} ${inr(a)} recorded for ${val('rc_i')}`});save();closeModal();rerender();toast('Cost recorded')}
+function moveItem(jid,k){const j=job(jid),it=j.items[k];if(it.stage>=DONE())return;const cur=S.template[it.stage],next=S.template[it.stage+1];
+  if(cur==='QC')return openQC(jid,k);
+  openModal(`Move to next stage`,`<div class="help">${ic('package')}<div><b>${esc(it.name)}</b> × ${it.qty}<br>${stagePill(cur)} ${ic('arrow-right','width:14px;vertical-align:-3px')} ${stagePill(next)}</div></div><div class="form">
+  <div class="fld"><label>Which team will do "${next}"?</label><select class="sel" id="mv_t"><option value="">— Choose team (optional) —</option>${S.teams.filter(t=>t.active).map(t=>`<option ${it.team===t.name?'selected':''}>${esc(t.name)}</option>`).join('')}</select></div>
+  <div class="fld"><label>Labour charge for "${cur}" (₹)</label><input class="inp" type="number" id="mv_c" placeholder="Optional"><div class="hint">Leave empty if not paid per piece</div></div></div>`,
+  `<button class="btn" onclick="closeModal()">Cancel</button><button class="btn pri" onclick="doMove('${jid}',${k})">${ic('check')}Move to ${next}</button>`)}
+function doMove(jid,k,team,charge){const j=job(jid),it=j.items[k];team=team??val('mv_t');charge=charge??num('mv_c');const from=S.template[it.stage];it.stage++;const to=S.template[it.stage];if(team)it.team=team;
+  it.history.push({stage:to,at:nowISO(),by:ROLES[S.role]});j.history.unshift({at:nowISO(),by:ROLES[S.role],msg:`${it.name} moved ${from} → ${to}${team?' ('+team+')':''}`});
+  if(charge>0)j.costs.push({label:'Labour Charge',bucket:'labour',item:it.name,stage:from,at:todayISO(),amount:charge,note:''});
+  audit(`${jid} · ${it.name} moved to ${to}`);save();closeModal();rerender();toast(`${it.name} → ${to}`,'arrow-right-circle')}
+function bulkMove(jid,stage){const j=job(jid);let n=0;j.items.forEach((it,k)=>{if(it.stage===stage){doMove(jid,k,'',0);n++}});toast(`${n} product(s) moved to ${S.template[stage+1]}`,'fast-forward')}
+function openQC(jid,k){const j=job(jid),it=j.items[k];openModal(`QC check – ${esc(it.name)}`,`<div class="help">${ic('clipboard-check')}<div>Check each point. If all are fine, click <b>Pass</b>. If something is wrong, write the reason and click <b>Send back for rework</b>.</div></div>
+  <div class="grid g2" style="gap:8px">${QC_LIST.map(c=>`<label class="check"><input type="checkbox" class="qcb">${c}</label>`).join('')}</div>
+  <div class="fld" style="margin-top:14px"><label>If not OK – what is the problem?</label><input class="inp" id="qc_r" style="width:100%" placeholder="e.g. Door shutter size mismatch"></div>`,
+  `<button class="btn red" onclick="qcResult('${jid}',${k},false)">${ic('rotate-ccw')}Send back for rework</button><button class="btn green" onclick="qcResult('${jid}',${k},true)">${ic('check')}Pass – mark Complete</button>`)}
+function qcResult(jid,k,ok){const j=job(jid),it=j.items[k];const passed=[...document.querySelectorAll('.qcb')].filter(c=>c.checked).length;
+  if(ok&&passed<QC_LIST.length)return toast(`Tick all ${QC_LIST.length} points to pass, or send it back for rework`,'alert-circle');const r=val('qc_r');if(!ok&&!r)return toast('Please write the problem','alert-circle');
+  if(ok){it.stage=DONE();it.history.push({stage:'Complete',at:nowISO(),by:ROLES[S.role]});j.history.unshift({at:nowISO(),by:ROLES[S.role],msg:`${it.name} passed QC (${passed}/${QC_LIST.length})`});toast('QC passed ✅ – product complete')}
+  else{it.stage=S.template.indexOf('Carpentry');it.history.push({stage:'Carpentry (rework)',at:nowISO(),by:ROLES[S.role]});j.history.unshift({at:nowISO(),by:ROLES[S.role],msg:`${it.name} failed QC – rework: ${r}`});toast('Sent back to Carpentry for rework','rotate-ccw')}
+  save();closeModal();rerender()}
+
+/* ---------- TEAMS & WORKERS ---------- */
+PAGES.teams=()=>modHead('teams','Add your workshop staff, then group them into teams for each station (cutting, assembly, polishing…).',`${seg('teamTab',[['teams','Teams'],['workers','Workers']])}<button class="btn pri" onclick="${UI.teamTab==='teams'?'editTeam()':'editWorker()'}">${ic('plus')}${UI.teamTab==='teams'?'Create Team':'Add Worker'}</button>`)+
+ (UI.teamTab==='teams'?`<div class="grid g3">${S.teams.map(t=>`<div class="card team" style="${t.active?'':'opacity:.6'}"><div class="top2"><div><b style="font-size:15px">${esc(t.name)}</b><div class="small muted">Created ${fmtD(t.at)}</div></div><span class="pill p-blue">${t.station}</span></div>
+   <div class="small" style="margin:12px 0 8px">${ic('hard-hat','width:15px;vertical-align:-3px;color:var(--amber)')} <b>${t.members.length} workers</b></div>
+   ${t.members.map(w=>worker(w)).filter(Boolean).map(w=>`<div class="mem"><div class="who">${av(w.name)}<span>${esc(w.name)}</span></div><span class="pill p-gray">${w.station}</span></div>`).join('')}
+   <div class="foot"><button class="btn sm" onclick="editTeam('${t.id}')">${ic('pencil')}Edit</button><button class="btn sm" onclick="const t=S.teams.find(x=>x.id==='${t.id}');t.active=!t.active;save();rerender()">${ic('power')}${t.active?'Deactivate':'Activate'}</button><button class="btn sm red" style="margin-left:auto" onclick="ask('Delete this team?',()=>{S.teams=S.teams.filter(x=>x.id!=='${t.id}');save();rerender()})">${ic('trash-2')}</button></div></div>`).join('')}</div>`
+ :`<div class="card"><div class="tw"><table><thead><tr><th>Worker</th><th>Station</th><th>Team</th><th class="right">Daily wage</th><th>Days present (this month)</th><th>Status</th><th></th></tr></thead><tbody>${S.workers.map(w=>`<tr class="click" onclick="editWorker('${w.id}')"><td><div class="who">${av(w.name)}<b>${esc(w.name)}</b></div></td><td><span class="pill p-gray">${w.station}</span></td><td>${esc(teamOf(w.id)?.name||'—')}</td><td class="right tnum">${inr(w.wage)}</td><td>${monthDays(w.id,todayISO().slice(0,7)).p} P · ${monthDays(w.id,todayISO().slice(0,7)).h} H</td><td>${pill(w.active?'Active':'Inactive')}</td><td>${ic('chevron-right','color:#B8C0D2')}</td></tr>`).join('')}</tbody></table></div><div class="tfoot">${S.workers.length} workers · daily wages are sample values</div></div>`);
+function editTeam(id){const t=S.teams.find(x=>x.id===id)||{station:'Assembly',members:[]};
+  openModal(id?'Edit Team':'Create Team',`<div class="form"><div class="fld"><label>Team name <em>*</em></label><input class="inp" id="t_name" value="${esc(t.name||'')}" placeholder="e.g. Team Ashraf Furniture"></div><div class="fld"><label>Station</label><select class="sel" id="t_st">${STATIONS.map(s=>`<option ${t.station===s?'selected':''}>${s}</option>`).join('')}</select></div>
+  <div class="fld full"><label>Pick workers</label><div class="grid g3" style="gap:6px">${S.workers.map(w=>`<label class="check"><input type="checkbox" class="tw_m" value="${w.id}" ${t.members.includes(w.id)?'checked':''}>${esc(w.name)}</label>`).join('')}</div></div></div>`,
+  `<button class="btn" onclick="closeModal()">Cancel</button><button class="btn pri" onclick="saveTeam('${id||''}')">${ic('check')}Save team</button>`,'wide')}
+function saveTeam(id){const name=val('t_name');if(!name)return toast('Enter team name','alert-circle');const members=[...document.querySelectorAll('.tw_m:checked')].map(c=>c.value);
+  S.teams.forEach(t=>{if(t.id!==id)t.members=t.members.filter(m=>!members.includes(m))});
+  if(id)Object.assign(S.teams.find(x=>x.id===id),{name,station:val('t_st'),members});else S.teams.push({id:'TM'+(S.seq.team++),name,station:val('t_st'),members,active:true,at:todayISO()});save();closeModal();rerender();toast('Team saved')}
+function editWorker(id){const w=worker(id)||{station:'Assembly',wage:900,active:true};
+  openModal(id?'Edit Worker':'Add Worker',`<div class="form"><div class="fld"><label>Name <em>*</em></label><input class="inp" id="w_name" value="${esc(w.name||'')}"></div><div class="fld"><label>Phone</label><input class="inp" id="w_ph" value="${esc(w.phone||'')}"></div>
+  <div class="fld"><label>Station</label><select class="sel" id="w_st">${STATIONS.map(s=>`<option ${w.station===s?'selected':''}>${s}</option>`).join('')}</select></div><div class="fld"><label>Daily wage (₹)</label><input class="inp" type="number" id="w_wage" value="${w.wage}"></div>
+  <label class="check full"><input type="checkbox" id="w_act" ${w.active?'checked':''}>Active (show in attendance)</label></div>`,
+  `${id?`<button class="btn red" style="margin-right:auto" onclick="ask('Remove this worker?',()=>{S.workers=S.workers.filter(x=>x.id!=='${id}');S.teams.forEach(t=>t.members=t.members.filter(m=>m!=='${id}'));save();rerender()},'Yes, remove')">${ic('trash-2')}Remove</button>`:''}<button class="btn" onclick="closeModal()">Cancel</button><button class="btn pri" onclick="saveWorker('${id||''}')">${ic('check')}Save</button>`)}
+function saveWorker(id){const name=val('w_name');if(!name)return toast('Enter name','alert-circle');const d={name,phone:val('w_ph'),station:val('w_st'),wage:num('w_wage'),active:$('#w_act').checked};
+  if(id)Object.assign(worker(id),d);else S.workers.push({id:'W'+(S.seq.wrk++)+'x',...d});save();closeModal();if(UI.route!=='teams'){UI.teamTab='workers';nav('teams')}else rerender();toast('Worker saved')}
+
+/* ---------- ATTENDANCE ---------- */
+function monthDays(wid,ym){let p=0,h=0,a=0;Object.entries(S.att).forEach(([d,m])=>{if(d.startsWith(ym)){const v=m[wid];if(v==='P')p++;else if(v==='H')h++;else if(v==='A')a++}});return{p,h,a}}
+PAGES.attendance=()=>{const d=UI.attDate,day=S.att[d]||{};const ws=S.workers.filter(w=>w.active);const c={P:0,H:0,A:0,U:0};ws.forEach(w=>c[day[w.id]||'U']++);
+  return modHead('attendance','Mark who came to work today. Wages in Payroll are worked out from this.',seg('attTab',[['mark','Mark attendance'],['register','Monthly register']]))+
+  (UI.attTab==='mark'?`<div class="grid g4 mb">${[['Present',c.P,'#16A34A'],['Half day',c.H,'#D97706'],['Absent',c.A,'#DC2626'],['Not marked',c.U,'#64748B']].map(x=>`<div class="card kpi" style="cursor:default"><div class="l">${x[0]}</div><div class="v" style="color:${x[2]}">${x[1]}</div></div>`).join('')}</div>
+  <div class="card"><div class="bar"><button class="ibtn" onclick="UI.attDate=addDays(UI.attDate,-1);rerender()">${ic('chevron-left')}</button><input class="inp" type="date" value="${d}" max="${todayISO()}" onchange="UI.attDate=this.value;rerender()"><button class="ibtn" ${d>=todayISO()?'disabled style="opacity:.4"':''} onclick="if(UI.attDate<todayISO()){UI.attDate=addDays(UI.attDate,1);rerender()}">${ic('chevron-right')}</button>
+   ${fsearch('attQ','Search worker…','attRows')}${fsel('attSt','All stations',STATIONS,'attRows')}<button class="btn green" onclick="markAll()">${ic('check-check')}Mark all unmarked as Present</button></div>
+  <div class="tw"><table><thead><tr><th>Worker</th><th>Station</th><th>Team</th><th>Working on</th><th>Attendance</th></tr></thead><tbody id="attRows">${attRows()}</tbody></table></div></div>`
+  :attRegister())};
+function attRows(){const d=UI.attDate,day=S.att[d]||{};const q=UI.attQ.toLowerCase();return S.workers.filter(w=>w.active&&(!UI.attSt||w.station===UI.attSt)&&(!q||w.name.toLowerCase().includes(q))).map(w=>{const t=teamOf(w.id);const prod=t?S.jobs.flatMap(j=>j.items.filter(i=>i.team===t.name&&i.stage<DONE()).map(i=>i.name)):[];const v=day[w.id];
+  return`<tr><td><div class="who">${av(w.name)}<b>${esc(w.name)}</b></div></td><td>${w.station}</td><td>${esc(t?.name||'—')}</td><td class="small">${prod.length?esc(prod.slice(0,2).join(', '))+(prod.length>2?` +${prod.length-2}`:''):'<span class="muted">No product assigned</span>'}</td>
+  <td><div class="att">${[['A','Absent'],['H','Half day'],['P','Present']].map(([k,l])=>`<button class="${v===k?k:''}" onclick="setAtt('${w.id}','${k}')">${l}</button>`).join('')}</div></td></tr>`}).join('')||emptyRow(5,'No workers found','users')}
+function setAtt(wid,v){(S.att[UI.attDate]=S.att[UI.attDate]||{})[wid]=v;save();rerender()}
+function markAll(){const day=S.att[UI.attDate]=S.att[UI.attDate]||{};let n=0;S.workers.filter(w=>w.active).forEach(w=>{if(!day[w.id]){day[w.id]='P';n++}});save();rerender();toast(`${n} worker(s) marked Present`)}
+function attRegister(){const ym=UI.attDate.slice(0,7);const[y,m]=ym.split('-').map(Number);const days=new Date(y,m,0).getDate();const t=todayISO();
+  return`<div class="card"><div class="bar"><b>${new Date(y,m-1,1).toLocaleDateString('en-GB',{month:'long',year:'numeric'})}</b><span class="small muted">P = Present · H = Half day · A = Absent · grey = Sunday / not marked</span></div><div class="tw"><table class="reg"><thead><tr><th>Worker</th>${Array.from({length:days},(_,i)=>`<th style="padding:8px 2px;text-align:center">${i+1}</th>`).join('')}<th>P</th><th>H</th><th>A</th></tr></thead><tbody>
+  ${S.workers.filter(w=>w.active).map(w=>{const md=monthDays(w.id,ym);return`<tr><td>${esc(w.name)}</td>${Array.from({length:days},(_,i)=>{const dt=ym+'-'+pad(i+1,2);const v=(S.att[dt]||{})[w.id];return`<td>${dt>t?'':`<i class="${v||'S'}">${v||'·'}</i>`}</td>`}).join('')}<td class="b c-green">${md.p}</td><td class="b c-amber">${md.h}</td><td class="b c-red">${md.a}</td></tr>`}).join('')}</tbody></table></div></div>`}
+
+/* ---------- STAGES & TEMPLATES ---------- */
+PAGES.stages=()=>{const list=S.stages.filter(s=>UI.stageF==='all'||(UI.stageF==='on'?s.active:!s.active));
+  return modHead('stages','Set the steps every product goes through in the workshop. Change names and colours anytime.',`<button class="btn pri" onclick="editStage()">${ic('plus')}New Stage</button>`)+`
+  <div class="card mb"><div class="card-h"><h3>${ic('layers')}Stage master</h3>${seg('stageF',[['all',`All (${S.stages.length})`],['on',`Active (${S.stages.filter(s=>s.active).length})`],['off',`Off (${S.stages.filter(s=>!s.active).length})`]])}</div>
+   <div class="card-b" style="padding:12px 0 4px"><div class="small muted" style="padding:0 16px 10px">Rename or recolour a stage and it changes everywhere. The start stage cannot be switched off.</div>
+   ${list.map(s=>`<div class="stg ${s.active?'':'off'}"><span class="pill" style="background:${s.color}22;color:${s.color};font-size:13px">${esc(s.name)}</span>${s.start?'<span class="pill p-amber">START · fixed</span>':''}${s.rework?'<span class="pill p-teal">↩ Rework allowed</span>':''}${!s.active?'<span class="pill p-gray">Switched off</span>':''}<span class="small muted">${s.station?'📍 '+esc(s.station):'Works at all stations'}</span>
+    <div class="acts">${s.start?'':`<button class="btn sm ghost" onclick="toggleStage('${s.id}')">${s.active?'Switch off':'Switch on'}</button>`}<button class="btn sm ghost" onclick="editStage('${s.id}')">${ic('pencil')}Edit</button></div></div>`).join('')}</div></div>
+  <div class="grid g2"><div class="card"><div class="card-h"><h3>${ic('workflow')}Pipeline template</h3><span class="pill p-blue">Standard Production · Default</span></div><div class="card-b">
+   <div class="small muted mb">New jobs follow these steps in this order:</div><div class="flow">${S.template.map((s,i)=>(i?ic('arrow-right'):'')+stagePill(s)).join('')}</div></div></div>
+  <div class="card"><div class="card-h"><h3>${ic('tags')}Charge labels</h3><button class="btn sm" onclick="addLabel()">${ic('plus')}Add label</button></div><div class="card-b">
+   <div class="small muted mb">Used when recording costs on a job. Product cost = material + labour + other charges.</div>
+   ${S.labels.map(l=>`<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--line2)"><span class="pill ${l.bucket==='labour'?'p-amber':'p-blue'}">${l.bucket==='labour'?'👷 Labour':'Other'}</span><b>${esc(l.name)}</b>${l.system?'<span class="pill p-gray">System</span>':''}<button class="btn sm ghost" style="margin-left:auto" onclick="askInput('Rename label','Label name',S.labels.find(x=>x.id==='${l.id}').name,v=>{S.labels.find(x=>x.id==='${l.id}').name=v;save();rerender()})">Rename</button></div>`).join('')}</div></div></div>`};
+function addLabel(){openModal('Add charge label',`<div class="form"><div class="fld full"><label>Label name <em>*</em></label><input class="inp" id="lb_n" placeholder="e.g. Polishing Charge"></div><div class="fld full"><label>Type</label><div class="chips"><label><input type="radio" name="lb_b" value="labour" checked><span>👷 Labour</span></label><label><input type="radio" name="lb_b" value="additional"><span>Other charge</span></label></div></div></div>`,
+  `<button class="btn" onclick="closeModal()">Cancel</button><button class="btn pri" onclick="const n=val('lb_n');if(!n)return toast('Enter label name','alert-circle');S.labels.push({id:'LB'+Date.now(),name:n,bucket:document.querySelector('input[name=lb_b]:checked').value,system:false,active:true});save();closeModal();rerender();toast('Label added')">${ic('check')}Add</button>`)}
+function toggleStage(id){const s=S.stages.find(x=>x.id===id);if(s.active&&S.template.includes(s.name))return toast('This stage is used in the pipeline template – it cannot be switched off','alert-circle');s.active=!s.active;save();rerender()}
+function editStage(id){const s=S.stages.find(x=>x.id===id)||{color:'#3B82F6',station:''};openModal(id?'Edit Stage':'New Stage',`<div class="form"><div class="fld"><label>Stage name <em>*</em></label><input class="inp" id="s_name" value="${esc(s.name||'')}"></div><div class="fld"><label>Colour</label><input class="inp" type="color" id="s_col" value="${s.color}" style="padding:4px;width:80px"></div>
+  <div class="fld full"><label>Station (optional)</label><input class="inp" id="s_st" value="${esc(s.station)}" placeholder="Leave empty = all stations"></div>
+  ${!id?`<label class="check full"><input type="checkbox" id="s_tpl">Add to the pipeline template (before QC)</label>`:''}</div>`,`<button class="btn" onclick="closeModal()">Cancel</button><button class="btn pri" onclick="saveStage('${id||''}')">${ic('check')}Save</button>`)}
+function saveStage(id){const name=val('s_name');if(!name)return toast('Enter stage name','alert-circle');
+  if(id){const s=S.stages.find(x=>x.id===id);const old=s.name;Object.assign(s,{name,color:val('s_col'),station:val('s_st')});const ti=S.template.indexOf(old);if(ti>=0)S.template[ti]=name}
+  else{S.stages.push({id:'ST'+Date.now(),name,color:val('s_col'),station:val('s_st'),start:false,rework:false,active:true});if($('#s_tpl').checked){S.template.splice(S.template.indexOf('QC'),0,name);S.jobs.forEach(j=>j.items.forEach(i=>{if(i.stage>=S.template.indexOf(name))i.stage++}))}}
+  save();closeModal();rerender();toast('Stage saved')}
+
+/* ---------- BILLING & ACCOUNTS ---------- */
+PAGES.billing=()=>{const tv=S.orders.reduce((a,o)=>a+total(o),0),rc=S.payments.reduce((a,p)=>a+p.amount,0);const late=S.orders.filter(o=>total(o)-paidOf(o.id)>0&&o.expected<todayISO());
+  return modHead('billing','Who has paid, who still owes money, and print invoices. Simple.',`<button class="btn green" onclick="recordPayment()">${ic('plus')}Record Payment</button>`)+`
+  <div class="grid g4 mb">${[['Total billed',inr(tv),'file-text','#3B82F6'],['Money received',inr(rc),'wallet','#16A34A'],['Still to collect',inr(tv-rc),'hand-coins','#D97706'],['Past delivery date & unpaid',late.length+' orders','alarm-clock','#DC2626']].map(x=>`<div class="card kpi" style="cursor:default"><div style="display:flex;justify-content:space-between"><div class="l">${x[0]}</div><span class="ico" style="background:${x[3]}1F;color:${x[3]}">${ic(x[2])}</span></div><div class="v tnum">${x[1]}</div></div>`).join('')}</div>
+  <div class="card mb target" style="padding:16px 18px"><b>Collection progress</b><div class="tr"><i style="width:${tv?rc/tv*100:0}%"></i><span>${inr(rc)} of ${inr(tv)} collected (${tv?Math.round(rc/tv*100):0}%)</span></div></div>
+  ${tabs('billTab',[['receivable','Money to collect'],['payments','Payments received'],['invoices','Invoices']])}
+  ${UI.billTab==='receivable'?`<div class="card tw"><table><thead><tr><th>Customer</th><th>Order</th><th class="right">Total</th><th class="right">Paid</th><th class="right">Balance</th><th>Collected</th><th>Delivery by</th><th></th></tr></thead><tbody>
+   ${S.orders.filter(o=>total(o)-paidOf(o.id)>0).sort((a,b)=>a.expected.localeCompare(b.expected)).map(o=>{const t=total(o),p=paidOf(o.id);return`<tr><td><div class="who">${av(o.cust)}<div><b>${esc(o.cust)}</b><small>${esc(o.mobile||'')}</small></div></div></td><td class="code"><span class="link" onclick="viewOrder('${o.id}')">${o.id}</span></td><td class="right tnum">${inr(t)}</td><td class="right tnum c-green">${inr(p)}</td><td class="right tnum b c-amber">${inr(t-p)}</td><td><div class="prog"><i style="width:${p/t*100}%;background:var(--green)"></i></div></td><td>${fmtD(o.expected)} ${o.expected<todayISO()?'<span class="pill p-red">Late</span>':''}</td><td class="right"><button class="btn sm green" onclick="recordPayment('${o.id}')">Collect</button></td></tr>`}).join('')||emptyRow(8,'Everyone has paid 🎉','party-popper')}</tbody></table></div>`
+  :UI.billTab==='payments'?`<div class="card tw"><table><thead><tr><th>Receipt</th><th>Date</th><th>Order</th><th>Customer</th><th>Mode</th><th>By</th><th class="right">Amount</th><th></th></tr></thead><tbody>${S.payments.slice().reverse().map(p=>`<tr><td class="code">${p.id}</td><td>${fmtDT(p.at)}</td><td class="code">${p.order}</td><td>${esc(order(p.order)?.cust)}</td><td><span class="pill p-gray">${p.mode}</span></td><td>${esc(p.by)}</td><td class="right tnum b c-green">${inr(p.amount)}</td><td><button class="btn sm ghost" onclick="printDoc('receipt','${p.id}')">${ic('printer')}</button></td></tr>`).join('')||emptyRow(8,'No payments yet','wallet')}</tbody></table></div>`
+  :`<div class="card tw"><table><thead><tr><th>Invoice</th><th>Order</th><th>Customer</th><th>Date</th><th class="right">Amount</th><th>Status</th><th></th></tr></thead><tbody>${S.orders.map(o=>{const t=total(o),p=paidOf(o.id);return`<tr><td class="code">INV-${o.id.slice(3)}</td><td class="code">${o.id}</td><td>${esc(o.cust)}</td><td>${fmtD(o.date)}</td><td class="right tnum b">${inr(t)}</td><td>${p>=t?'<span class="pill p-green">Paid</span>':p>0?'<span class="pill p-amber">Part paid</span>':'<span class="pill p-red">Unpaid</span>'}</td><td class="right"><button class="btn sm" onclick="printDoc('invoice','${o.id}')">${ic('eye')}View</button></td></tr>`}).join('')}</tbody></table></div>`}`};
+
+/* ---------- PAYROLL ---------- */
+PAGES.payroll=()=>{const ym=UI.payMonth;const pr=S.payroll[ym]=S.payroll[ym]||{};
+  const rows=S.workers.filter(w=>w.active).map(w=>{const d=monthDays(w.id,ym);const gross=(d.p+d.h*0.5)*w.wage;const r=pr[w.id]||{adv:0,paid:false};return{w,d,gross,adv:r.adv||0,net:gross-(r.adv||0),paid:r.paid}});
+  const tot=rows.reduce((a,r)=>a+r.net,0),paid=rows.filter(r=>r.paid).reduce((a,r)=>a+r.net,0);
+  return modHead('payroll','Salary is worked out from attendance: full day = full wage, half day = half wage. Subtract any advance and mark as paid.',`<input class="inp" type="month" value="${ym}" onchange="UI.payMonth=this.value;rerender()">`)+`
+  <div class="grid g3 mb">${[['Total salary this month',inr(tot),'#3B82F6'],['Already paid',inr(paid),'#16A34A'],['Still to pay',inr(tot-paid),'#D97706']].map(x=>`<div class="card kpi" style="cursor:default"><div class="l">${x[0]}</div><div class="v tnum" style="color:${x[2]}">${x[1]}</div></div>`).join('')}</div>
+  <div class="help">${ic('info')}<div>Formula: <b>(Present days + ½ × Half days) × Daily wage − Advance = Net pay</b>. Daily wages are sample values – change them in Teams & Workers.</div></div>
+  <div class="card tw"><table><thead><tr><th>Worker</th><th>Station</th><th class="right">Present</th><th class="right">Half day</th><th class="right">Absent</th><th class="right">Daily wage</th><th class="right">Earned</th><th class="right">Advance taken</th><th class="right">Net pay</th><th>Status</th></tr></thead><tbody>
+  ${rows.map(r=>`<tr><td><div class="who">${av(r.w.name)}<b>${esc(r.w.name)}</b></div></td><td>${r.w.station}</td><td class="right c-green b">${r.d.p}</td><td class="right c-amber b">${r.d.h}</td><td class="right c-red b">${r.d.a}</td><td class="right tnum">${inr(r.w.wage)}</td><td class="right tnum">${inr(r.gross)}</td><td class="right"><input class="inp" type="number" style="width:100px;height:32px;text-align:right" value="${r.adv}" ${r.paid?'disabled':''} onchange="setPay('${r.w.id}','adv',+this.value||0)"></td><td class="right tnum b">${inr(r.net)}</td><td>${r.paid?`<span class="pill p-green">${ic('check','width:12px;height:12px')}Paid</span> <button class="btn sm ghost" onclick="setPay('${r.w.id}','paid',false)">Undo</button>`:`<button class="btn sm green" onclick="setPay('${r.w.id}','paid',true)">Mark paid</button>`}</td></tr>`).join('')}</tbody></table></div>`};
+function setPay(wid,k,v){const pr=S.payroll[UI.payMonth]=S.payroll[UI.payMonth]||{};pr[wid]=pr[wid]||{adv:0,paid:false};pr[wid][k]=v;if(k==='paid'&&v)audit(`Salary marked paid for ${worker(wid).name} (${UI.payMonth})`);save();rerender()}
+
+/* ---------- SETTINGS ---------- */
+PAGES.settings=()=>modHead('settings','Add staff logins, choose what each role can see, and check who did what.',UI.setTab==='users'?`<button class="btn pri" onclick="editUser()">${ic('user-plus')}Create User</button>`:'')+
+ tabs('setTab',[['users','Staff users'],['access','Who can see what'],['audit','Audit log']])+
+ (UI.setTab==='users'?`<div class="card tw"><table><thead><tr><th>Name</th><th>Email</th><th>Mobile</th><th>Role</th><th>Status</th><th></th></tr></thead><tbody>${S.users.map(u=>`<tr class="click" onclick="editUser('${u.id}')"><td><div class="who">${av(u.name)}<b>${esc(u.name)}</b></div></td><td>${esc(u.email||'—')}</td><td>${esc(u.mobile||'—')}</td><td><b class="small">${u.role.toUpperCase()}</b>${u.cat?` <span class="pill p-green" style="font-size:11px">${u.cat}</span>`:''}</td><td>${pill(u.active?'Active':'Inactive')}</td><td>${ic('chevron-right','color:#B8C0D2')}</td></tr>`).join('')}</tbody></table></div>`
+ :UI.setTab==='access'?`<div class="help">${ic('shield-check')}<div>Tick what each role can open. Try it: click your name at the top-right and choose “View the app as…”.</div></div><div class="card tw"><table class="matrix"><thead><tr><th>Menu</th>${Object.keys(ROLES).map(r=>`<th>${r}</th>`).join('')}</tr></thead><tbody>${MODS.map(m=>`<tr><td><div class="who"><span class="ico" style="background:${m[3]}22;color:${m[3]}">${ic(m[2])}</span>${m[1]}</div></td>${Object.keys(ROLES).map(r=>`<td><input type="checkbox" ${S.perms[r].includes(m[0])?'checked':''} ${r==='Admin'||m[0]==='home'?'disabled':''} onchange="togglePerm('${r}','${m[0]}',this.checked)"></td>`).join('')}</tr>`).join('')}</tbody></table></div>`
+ :`<div class="card"><div class="card-b"><div class="timeline">${S.audit.map(e=>`<div class="ev">${esc(e.msg)}<small>${esc(e.by)} · ${fmtDT(e.at)}</small></div>`).join('')}</div></div></div>`);
+function togglePerm(r,m,on){const p=S.perms[r];if(on&&!p.includes(m))p.push(m);if(!on)S.perms[r]=p.filter(x=>x!==m);save();renderNav();toast('Access updated')}
+function editUser(id){const u=S.users.find(x=>x.id===id)||{role:'Supervisor',cat:'',active:true};openModal(id?'Edit User':'Create User',`<div class="form"><div class="fld"><label>Name <em>*</em></label><input class="inp" id="u_name" value="${esc(u.name||'')}"></div><div class="fld"><label>Mobile</label><input class="inp" id="u_mob" value="${esc(u.mobile||'')}"></div>
+  <div class="fld"><label>Email</label><input class="inp" id="u_mail" value="${esc(u.email||'')}"></div><div class="fld"><label>Role</label><select class="sel" id="u_role">${Object.keys(ROLES).map(r=>`<option ${u.role===r?'selected':''}>${r}</option>`).join('')}</select></div>
+  <div class="fld"><label>Category (optional)</label><select class="sel" id="u_cat"><option value="">All</option>${CATS.map(c=>`<option ${u.cat===c?'selected':''}>${c}</option>`).join('')}</select></div>
+  <label class="check" style="align-self:end"><input type="checkbox" id="u_act" ${u.active?'checked':''}>Active (can log in)</label>
+  <div class="full help warn">${ic('lock')}<div>In the real app the user sets their own password on first login. This demo does not store passwords.</div></div></div>`,
+  `<button class="btn" onclick="closeModal()">Cancel</button><button class="btn pri" onclick="saveUser('${id||''}')">${ic('check')}Save</button>`)}
+function saveUser(id){const name=val('u_name');if(!name)return toast('Enter name','alert-circle');const d={name,mobile:val('u_mob'),email:val('u_mail'),role:val('u_role'),cat:val('u_cat'),active:$('#u_act').checked};if(id)Object.assign(S.users.find(x=>x.id===id),d);else{S.users.push({id:'U'+(S.seq.user++),...d});audit(`User ${name} created (${d.role})`)}save();closeModal();rerender();toast('User saved')}
+
+/* =========================================================
+   PRINT (quotation / invoice / receipt / cutting list)
+   ========================================================= */
+function printDoc(kind,id){let body='',ttl='';const css=`.docp{font-size:13px;color:#1E2433;border:1px solid #E3E7EF;border-radius:10px;padding:24px;background:#fff}.docp h1{margin:0;color:#C8102E;font-size:20px}.docp table{width:100%;border-collapse:collapse;margin-top:14px}.docp th,.docp td{border:1px solid #D9DEE8;padding:8px;text-align:left;white-space:normal}.docp th{background:#F3F5FA;color:#3B4256}.docp .r{text-align:right}.docp .hd{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;border-bottom:3px solid #C8102E;padding-bottom:12px;margin-bottom:16px}.docp .tot{width:300px;max-width:100%;margin-left:auto}.docp .tot td{border:0;padding:4px 8px}.docp .g{font-weight:800;font-size:16px;border-top:2px solid #1E2433!important}.docp pre{font-family:inherit;white-space:pre-wrap;background:#F8F9FC;padding:12px;border-radius:8px}`;
+  const hdr=(t,no,date)=>`<div class="hd"><div><h1>SRI VINAYAKA WOOD INDUSTRIES</h1><div>Palakkad, Kerala · 94463 04888, 85938 25777</div></div><div style="text-align:right"><b style="font-size:18px">${t}</b><div>${no}</div><div>${fmtD(date)}</div></div></div>`;
+  const lines=d=>`<table><tr><th>#</th><th>Item</th><th class="r">Qty</th><th class="r">Rate</th><th class="r">Disc</th><th class="r">Amount</th></tr>${d.lines.map((l,i)=>`<tr><td>${i+1}</td><td><b>${esc(l.name)}</b><br><small>${esc(l.desc||'')}</small></td><td class="r">${l.qty} ${l.unit||''}</td><td class="r">${inr(l.rate,1)}</td><td class="r">${l.disc||0}%</td><td class="r">${inr(lineAmt(l),1)}</td></tr>`).join('')}${(d.charges||[]).map(c=>`<tr><td></td><td colspan="4">${esc(c.label)}</td><td class="r">${inr(c.amount,1)}</td></tr>`).join('')}</table>`;
+  const tots=(d,extra='')=>{const t=totals(d);return`<table class="tot"><tr><td>Subtotal</td><td class="r">${inr(t.sub,1)}</td></tr>${t.disc?`<tr><td>Discount</td><td class="r">−${inr(t.disc,1)}</td></tr>`:''}${t.tax?`<tr><td>Tax</td><td class="r">${inr(t.tax,1)}</td></tr>`:''}<tr><td class="g">Grand total</td><td class="r g">${inr(t.total,1)}</td></tr>${extra}</table>`};
+  if(kind==='quote'){const q=S.quotations.find(x=>x.id===id);ttl=q.id;body=hdr('QUOTATION',q.id,q.at)+`<p><b>To:</b> ${esc(q.cust)}${q.company?', '+esc(q.company):''}<br>${esc(q.address||'')} ${esc(q.mobile||'')}</p>`+lines(q)+tots(q)+`<h3>Terms</h3><pre>${esc(q.notes||'')}</pre><p>We trust our offer would meet with your favour and look forward to hearing from you.<br><br>Thanking you,<br><b>SRI VINAYAKA WOOD INDUSTRIES</b></p>`}
+  if(kind==='invoice'){const o=order(id),p=paidOf(id);ttl='INV-'+o.id.slice(3);body=hdr('INVOICE',ttl,o.date)+`<p><b>Bill to:</b> ${esc(o.cust)}<br>${esc(o.address||'')} ${esc(o.mobile||'')}<br><b>Order:</b> ${o.id}</p>`+lines(o)+tots(o,`<tr><td>Paid</td><td class="r">${inr(p,1)}</td></tr><tr><td class="g">Balance due</td><td class="r g">${inr(total(o)-p,1)}</td></tr>`)}
+  if(kind==='receipt'){const p=S.payments.find(x=>x.id===id),o=order(p.order);ttl=p.id;body=hdr('PAYMENT RECEIPT',p.id,p.at)+`<p>Received with thanks from <b>${esc(o.cust)}</b> the sum of <b>${inr(p.amount,1)}</b> via <b>${p.mode}</b> towards order <b>${o.id}</b>.</p><p>Balance remaining: <b>${inr(total(o)-paidOf(o.id),1)}</b></p><br><p>Authorised signature</p>`}
+  if(kind==='cut'){const j=job(id),o=order(j.order);ttl='Cutting '+j.id;body=hdr('CUTTING LIST',j.id,todayISO())+`<p><b>Order:</b> ${o.id} · ${esc(o.cust)} · Delivery by ${fmtD(o.expected)}</p><table><tr><th>Product</th><th>Piece</th><th>Material</th><th>L (ft)</th><th>W (in)</th><th>T (in)</th><th class="r">Qty</th><th class="r">cft</th></tr>${j.cut.map(c=>`<tr><td>${esc(c.item)}</td><td>${esc(c.piece)}</td><td>${esc(mat(c.mat)?.name)}</td><td>${c.L}</td><td>${c.W}</td><td>${c.T}</td><td class="r">${c.qty*lineQty(j,c.item)}</td><td class="r">${(cft(c)*lineQty(j,c.item)).toFixed(4)}</td></tr>`).join('')||'<tr><td colspan="8">No pieces</td></tr>'}</table>`}
+  openModal(esc(ttl)+' <span class="pill p-gray">Preview</span>',`<style>${css}</style><div class="tw"><div class="docp">${body}</div></div><div class="small muted" style="margin-top:10px">In the real app this downloads as a PDF to print or send on WhatsApp.</div>`,`<button class="btn pri" onclick="closeModal()">Close</button>`,'wide')}
+
+/* =========================================================
+   GUIDE
+   ========================================================= */
+function showGuide(){openModal('How to use this app – 5 simple steps',`<div class="grid" style="gap:10px">${[
+  ['target','#F43F5E','1. Lead','Someone calls or visits? Click <b>Create → New Lead</b>. Type name, mobile, place. Done.'],
+  ['file-text','#F59E0B','2. Quotation','In Leads, click <b>Make Quotation</b>. Pick items – price fills itself. Print and give to customer.'],
+  ['shopping-cart','#22C55E','3. Order','Customer agrees? Open the quotation, click <b>Customer agreed</b>, then <b>Make Order</b>. Enter advance if paid.'],
+  ['hammer','#F97316','4. Workshop','Go to <b>All Jobs</b>. Open the job, click <b>Move to …</b> as each step finishes. At QC, tick the checklist.'],
+  ['indian-rupee','#10B981','5. Payment','When money comes, click <b>Record Payment</b>. Balance updates automatically. Mark delivered when it leaves.']
+ ].map(s=>`<div style="display:flex;gap:12px;align-items:flex-start;padding:12px;border:1px solid var(--line);border-radius:12px"><span class="ico" style="width:36px;height:36px;background:${s[1]}22;color:${s[1]}">${ic(s[0])}</span><div><b>${s[2]}</b><div class="small" style="margin-top:2px">${s[3]}</div></div></div>`).join('')}
+ <div class="help good" style="margin:6px 0 0">${ic('sparkles')}<div>Daily: mark <b>Attendance</b> in the morning. Monthly: check <b>Payroll</b>. Everything else shows up in <b>My tasks for today</b> on Home.</div></div></div>`,`<button class="btn pri" onclick="closeModal()">Got it!</button>`)}
+
+/* =========================================================
+   BOOT
+   ========================================================= */
+route();
+</script>
+</body>
+</html>
