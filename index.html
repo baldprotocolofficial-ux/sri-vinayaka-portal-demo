@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="description" content="Demo of the Sri Vinayaka Wood Industries operations portal – leads, quotations, orders, workshop, stock, billing and payroll.">
 <meta name="theme-color" content="#1D2840">
-<meta name="color-scheme" content="light dark">
+<meta name="color-scheme" content="light">
 <script>try{var t=localStorage.getItem("svw_theme");if(t)document.documentElement.setAttribute("data-theme",t);if(localStorage.getItem("svw_side")==="collapsed")document.documentElement.classList.add("pre-collapsed")}catch(e){}</script>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='10' fill='%231D2840'/%3E%3Cpath d='M27 12c-2-2-5-3-8-2-4 1-5 5-2 7l6 3c3 2 2 6-2 7-3 1-6 0-8-2' fill='none' stroke='%23fff' stroke-width='3.4' stroke-linecap='round'/%3E%3C/svg%3E">
 <title>Sri Vinayaka Operations Portal</title>
@@ -25,15 +25,6 @@
   --r:12px;--shadow:0 1px 2px rgba(20,30,60,.04),0 2px 8px rgba(20,30,60,.04);
   color-scheme:light;
 }
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --side:#0B1120;--side2:#1A2338;--side-on:#26345A;--side-ink:#B9C3D8;--side-mute:#7581A0;
-  --bg:#0F1524;--card:#171F31;--ink:#E7EBF3;--ink2:#C3CADA;--muted:#8E97AB;--line:#28324A;--line2:#1E2739;
-  --thbg:#1A2336;--hover:#1C2539;--kcol:#121A2B;--topbg:rgba(15,21,36,.9);
-  --pri:#6B8BFF;--pri-d:#5677F5;--pri-s:#1E2A4F;
-  --green:#34D399;--green-s:#11301F;--green-m:#1F5A3A;--red:#F87171;--red-s:#3A1B1E;--red-b:#6B2A2E;--amber:#FBBF24;--amber-s:#382A12;
-  --violet:#A78BFA;--violet-s:#2A2047;--teal:#2DD4BF;--teal-s:#0F302C;--gray-s:#263046;
-  --help-ink:#BFD0FF;--warn-ink:#FCD9A0;--bad-ink:#FCA5A5;--good-ink:#A7F3D0;--good-b:#1F5A3A;
-  --shadow:0 1px 2px rgba(0,0,0,.3),0 2px 8px rgba(0,0,0,.25);color-scheme:dark}}
 :root[data-theme="dark"]{
   --side:#0B1120;--side2:#1A2338;--side-on:#26345A;--side-ink:#B9C3D8;--side-mute:#7581A0;
   --bg:#0F1524;--card:#171F31;--ink:#E7EBF3;--ink2:#C3CADA;--muted:#8E97AB;--line:#28324A;--line2:#1E2739;
@@ -1170,10 +1161,9 @@ function showGuide(){openModal('How to use this app – 5 simple steps',`<div cl
    ========================================================= */
 function toggleSide(){if(innerWidth<=900){document.body.classList.toggle('navopen');return}
   const c=document.body.classList.toggle('collapsed');try{localStorage.setItem('svw_side',c?'collapsed':'open')}catch(e){}}
-const effTheme=()=>document.documentElement.getAttribute('data-theme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+const effTheme=()=>document.documentElement.getAttribute('data-theme')==='dark'?'dark':'light';
 function paintThemeBtn(){const b=document.getElementById('themeBtn');if(!b)return;const d=effTheme()==='dark';b.innerHTML=ic(d?'sun':'moon');b.title=d?'Switch to light mode':'Switch to dark mode';lucide.createIcons()}
 function toggleTheme(){const n=effTheme()==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',n);try{localStorage.setItem('svw_theme',n)}catch(e){}paintThemeBtn();toast(n==='dark'?'Dark mode on':'Light mode on',n==='dark'?'moon':'sun')}
-matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change',paintThemeBtn);
 addEventListener('resize',()=>{if(innerWidth>900)document.body.classList.remove('navopen')});
 
 /* =========================================================
