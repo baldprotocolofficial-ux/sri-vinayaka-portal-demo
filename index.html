@@ -387,10 +387,16 @@ td.wrap{white-space:normal;min-width:220px}
 .ibtn,.btn{color:var(--ink)}
 .btn.pri,.btn.green{color:#fff}
 .btn.red{color:var(--red)}
+/* ---- orders table: compact, even spacing ---- */
+.otable th,.otable td{padding-left:10px;padding-right:10px}
+.vbtn{width:34px;height:34px;color:var(--pri);margin-left:auto}
+.otable th:first-child,.otable td:first-child{padding-left:20px}
+.otable td>small{display:block;font-size:12px;margin-top:2px}
+.otable td{height:64px}
 /* ---- sortable column headers ---- */
 th.sortable{cursor:pointer;user-select:none}
 th.sortable:hover{color:var(--ink)}
-th .sarr{display:inline-block;margin-left:5px;font-size:10px;color:#AEB6C8;width:10px}
+th .sarr{display:inline-block;margin-left:3px;font-size:9px;color:#AEB6C8;width:8px}
 th.sorted{color:var(--pri)}
 th.sorted .sarr{color:var(--pri)}
 /* ---- delivery priority box ---- */
@@ -921,8 +927,12 @@ function saveItem(id){const name=val('i_name'),price=num('i_price');if(!name||!p
 PAGES.orders=()=>modHead('orders','All confirmed orders. Track money received, balance and delivery here.',`<button class="btn green" onclick="openQuoteForm({direct:true})">${ic('plus')}Direct Order</button>`)+dueBanner()+`
   <div class="grid g4 mb">${[['Total order value',inr(S.orders.reduce((a,o)=>a+total(o),0)),'#3B82F6'],['Money received',inr(S.payments.reduce((a,p)=>a+p.amount,0)),'#16A34A'],['Balance to collect',inr(S.orders.reduce((a,o)=>a+total(o)-paidOf(o.id),0)),'#D97706'],['In production',S.orders.filter(o=>orderStatus(o)==='In Production').length+' orders','#7C3AED']].map(x=>`<div class="card kpi" style="cursor:default"><div class="l">${x[0]}</div><div class="v tnum" style="color:${x[2]}">${x[1]}</div></div>`).join('')}</div>
   <div class="card"><div class="bar">${seg('ordMine',[[false,'All orders'],[true,'My orders']])}${fsearch('ordQ','Search order, customer or mobile…','ordRows')}${fsel('ordCat','All categories',CATS,'ordRows')}${fsel('ordSt','All statuses',['Confirmed','In Production','Ready for Delivery','Delivered'],'ordRows')}</div>
-  <div class="tw"><table><thead><tr><th>Order #</th><th>Customer</th><th>Category</th><th>From</th><th class="right">Total</th><th class="right">Paid</th><th class="right">Balance</th><th>Status</th><th>Ordered date</th><th>Delivery date</th><th></th></tr></thead><tbody id="ordRows">${ordRows()}</tbody></table></div></div>`;
-function ordRows(){const q=UI.ordQ.toLowerCase();const me=ROLES[S.role];return S.orders.filter(o=>(!UI.ordMine||o.sales===me||S.role==='Admin')&&(!UI.ordCat||o.cat===UI.ordCat)&&(!UI.ordSt||orderStatus(o)===UI.ordSt)&&(!q||[o.id,o.cust,o.mobile,o.src].join(' ').toLowerCase().includes(q))).map(o=>{const t=total(o),p=paidOf(o.id);return`<tr class="click" onclick="viewOrder('${o.id}')"><td class="code b" style="font-size:13px">${o.id}</td><td><div class="who">${av(o.cust)}<div><b>${esc(o.cust)}</b><small>${esc(o.mobile||'')}</small></div></div></td><td>${o.cat}</td><td><span class="pill p-gray code">${o.src}</span></td><td class="right tnum b">${inr(t)}</td><td class="right tnum c-green">${inr(p)}</td><td class="right tnum b ${t-p>0?'c-amber':'c-green'}">${inr(t-p)}</td><td>${pill(orderStatus(o))}</td><td>${fmtD(o.date)}</td><td>${o.delivered?`${fmtD(o.expected)} <span class="pill p-green">Delivered</span>`:`${fmtD(o.expected)} ${dueTag(orderDue(o))}`}</td><td>${ic('eye','color:var(--pri)')}</td></tr>`}).join('')||emptyRow(11,'No orders match your filters','search-x')}
+  <div class="tw"><table class="otable"><thead><tr><th>Order #</th><th>Customer</th><th class="right">Total</th><th class="right">Paid</th><th class="right">Balance</th><th>Status</th><th>Ordered date</th><th>Delivery date</th><th>Priority</th><th class="right" data-nosort style="padding-right:20px">Action</th></tr></thead><tbody id="ordRows">${ordRows()}</tbody></table></div></div>`;
+function ordRows(){const q=UI.ordQ.toLowerCase();const me=ROLES[S.role];return S.orders.filter(o=>(!UI.ordMine||o.sales===me||S.role==='Admin')&&(!UI.ordCat||o.cat===UI.ordCat)&&(!UI.ordSt||orderStatus(o)===UI.ordSt)&&(!q||[o.id,o.cust,o.mobile,o.src].join(' ').toLowerCase().includes(q))).map(o=>{const t=total(o),p=paidOf(o.id);return`<tr class="click" onclick="viewOrder('${o.id}')"><td><div class="code b" style="font-size:13px">${o.id}</div><small class="muted">${o.src==='DIRECT'?'Direct order':o.src}</small></td><td><div class="who">${av(o.cust)}<div><b>${esc(o.cust)}</b><small>${o.cat}${o.mobile?' · '+esc(o.mobile):''}</small></div></div></td><td class="right tnum b">${inr(t)}</td><td class="right tnum c-green">${inr(p)}</td><td class="right tnum b ${t-p>0?'c-amber':'c-green'}">${inr(t-p)}</td><td>${pill(orderStatus(o))}</td><td class="tnum">${fmtD(o.date)}</td><td class="tnum">${fmtD(o.expected)}</td>${prioCell(o)}<td class="right" style="padding-right:20px"><button class="ibtn vbtn" title="View order" onclick="event.stopPropagation();viewOrder('${o.id}')">${ic('eye')}</button></td></tr>`}).join('')||emptyRow(10,'No orders match your filters','search-x')}
+/* Priority column: sorts by urgency (late first) */
+function prioCell(o){if(o.delivered)return`<td data-v="9999"><span class="pill p-green">${ic('check','width:12px;height:12px')}Delivered</span></td>`;const d=orderDue(o);
+  if(d==null)return'<td data-v="9998"><span class="muted">—</span></td>';
+  const tag=d<=3?dueTag(d):`<span class="pill p-gray">${d} days left</span>`;return`<td data-v="${d}">${tag}</td>`}
 /* ---- click-to-sort table columns (every table in the page except .nosort) ---- */
 UI.sort={};
 const MON={Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
@@ -935,7 +945,7 @@ function cmpVal(a,b){if(typeof a==='number'&&typeof b==='number')return a-b;if(t
 function applySort(){document.querySelectorAll('#view table:not(.nosort)').forEach(t=>{const ths=[...t.querySelectorAll('thead th')];if(!ths.length)return;
   ths.forEach(th=>{if(th.dataset.l===undefined)th.dataset.l=th.textContent.trim()});
   const key=UI.route+'|'+ths.map(th=>th.dataset.l).join('|');const s=UI.sort[key];
-  ths.forEach((th,ci)=>{if(!th.dataset.l)return;
+  ths.forEach((th,ci)=>{if(!th.dataset.l||th.hasAttribute('data-nosort'))return;
     if(!th.classList.contains('sortable')){th.classList.add('sortable');th.title='Click to sort';th.insertAdjacentHTML('beforeend','<span class="sarr"></span>');
       th.onclick=()=>{const c=UI.sort[key];UI.sort[key]={c:ci,d:c&&c.c===ci&&c.d===1?-1:1};applySort()}}
     const on=s&&s.c===ci;th.classList.toggle('sorted',!!on);th.querySelector('.sarr').textContent=on?(s.d===1?'▲':'▼'):'↕'});
