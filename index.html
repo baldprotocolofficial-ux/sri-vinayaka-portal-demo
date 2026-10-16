@@ -387,6 +387,22 @@ td.wrap{white-space:normal;min-width:220px}
 .ibtn,.btn{color:var(--ink)}
 .btn.pri,.btn.green{color:#fff}
 .btn.red{color:var(--red)}
+/* ---- sortable column headers ---- */
+th.sortable{cursor:pointer;user-select:none}
+th.sortable:hover{color:var(--ink)}
+th .sarr{display:inline-block;margin-left:5px;font-size:10px;color:#AEB6C8;width:10px}
+th.sorted{color:var(--pri)}
+th.sorted .sarr{color:var(--pri)}
+/* ---- delivery priority box ---- */
+.duebox{border-color:var(--red-b)}
+.duerow{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 14px;border:1px solid var(--line);border-radius:10px;margin-bottom:8px;background:var(--card)}
+.duerow:last-child{margin-bottom:0}
+.duerow.late{border-color:var(--red-b);background:var(--red-s)}
+.duerow.today{border-color:var(--amber);background:var(--amber-s)}
+.duerow small{display:block;font-size:11.5px}
+.duechk{display:flex;align-items:center;gap:7px;font-weight:700;font-size:13px;cursor:pointer;padding:6px 10px;border:1px solid var(--line);border-radius:8px;background:var(--card)}
+.duechk input{width:19px;height:19px;accent-color:var(--green);cursor:pointer}
+@media (max-width:560px){.duerow{gap:10px}.duerow .who{min-width:0;flex-basis:calc(100% - 110px)}}
 </style>
 </head>
 <body>
@@ -687,14 +703,14 @@ function globalSearch(q){const box=$('#sres');q=q.trim().toLowerCase();if(!q){bo
   box.innerHTML=r.slice(0,10).map(x=>`<div class="r" onclick="${x[4].startsWith('javascript:')?x[4].slice(11):`nav('${x[4]}')`};$('#sres').classList.remove('show')">${ic(x[0],'color:var(--pri)')}<div><b>${esc(x[2])}</b><div class="small muted">${x[1]} · ${x[3]}</div></div></div>`).join('')||'<div class="empty">Nothing found</div>';box.classList.add('show');lucide.createIcons()}
 window.addEventListener('hashchange',route);
 function route(){const h=(location.hash.slice(1)||'home').split('/');UI.route=h[0];UI.param=h[1]||'';render()}
-function render(){const key=UI.route==='job'?'jobs':UI.route;if(!PAGES[UI.route]||!allowed().includes(key)){UI.route='home'}renderNav();$('#view').innerHTML=PAGES[UI.route]();lucide.createIcons();window.scrollTo(0,0)}
-function rerender(){renderNav();$('#view').innerHTML=PAGES[UI.route]();lucide.createIcons()}
+function render(){const key=UI.route==='job'?'jobs':UI.route;if(!PAGES[UI.route]||!allowed().includes(key)){UI.route='home'}renderNav();$('#view').innerHTML=PAGES[UI.route]();lucide.createIcons();applySort();window.scrollTo(0,0)}
+function rerender(){renderNav();$('#view').innerHTML=PAGES[UI.route]();lucide.createIcons();applySort()}
 const head=(t,p,acts='',icon)=>`<div class="ph"><div><h1>${icon?`<span class="ico" style="width:34px;height:34px;background:${icon[1]}22;color:${icon[1]}">${ic(icon[0])}</span>`:''}${t}</h1><p>${p}</p></div><div class="acts">${acts}</div></div>`;
 const modHead=(key,p,acts)=>{const m=MODS.find(x=>x[0]===key);return head(m[1],p,acts,[m[2],m[3]])};
 const tabs=(key,list)=>`<div class="tabs">${list.map(([k,l])=>`<button class="${UI[key]===k?'on':''}" onclick="UI.${key}='${k}';rerender()">${l}</button>`).join('')}</div>`;
 const seg=(key,list,cb='rerender()')=>`<div class="seg">${list.map(([k,l])=>`<button class="${String(UI[key])===String(k)?'on':''}" onclick="UI.${key}=${typeof k==='boolean'?k:`'${k}'`};${cb}">${l}</button>`).join('')}</div>`;
-const fsearch=(key,ph,body)=>`<div class="fsearch">${ic('search')}<input class="inp" placeholder="${ph}" value="${esc(UI[key])}" oninput="UI.${key}=this.value;document.getElementById('${body}').innerHTML=${body}();lucide.createIcons()"></div>`;
-const fsel=(key,label,opts,body)=>`<select class="sel" onchange="UI.${key}=this.value;document.getElementById('${body}').innerHTML=${body}();lucide.createIcons()"><option value="">${label}</option>${opts.map(o=>`<option ${UI[key]===o?'selected':''}>${o}</option>`).join('')}</select>`;
+const fsearch=(key,ph,body)=>`<div class="fsearch">${ic('search')}<input class="inp" placeholder="${ph}" value="${esc(UI[key])}" oninput="UI.${key}=this.value;document.getElementById('${body}').innerHTML=${body}();lucide.createIcons();applySort()"></div>`;
+const fsel=(key,label,opts,body)=>`<select class="sel" onchange="UI.${key}=this.value;document.getElementById('${body}').innerHTML=${body}();lucide.createIcons();applySort()"><option value="">${label}</option>${opts.map(o=>`<option ${UI[key]===o?'selected':''}>${o}</option>`).join('')}</select>`;
 const emptyRow=(cols,msg,icon='inbox')=>`<tr><td colspan="${cols}"><div class="empty">${ic(icon)}<div>${msg}</div></div></td></tr>`;
 
 /* =========================================================
@@ -902,11 +918,46 @@ function saveItem(id){const name=val('i_name'),price=num('i_price');if(!name||!p
   if(id)Object.assign(S.items.find(x=>x.id===id),d);else S.items.unshift({id:'IT'+(S.seq.item++),...d});save();closeModal();rerender();toast('Item saved')}
 
 /* ---------- ORDERS ---------- */
-PAGES.orders=()=>modHead('orders','All confirmed orders. Track money received, balance and delivery here.',`<button class="btn green" onclick="openQuoteForm({direct:true})">${ic('plus')}Direct Order</button>`)+`
+PAGES.orders=()=>modHead('orders','All confirmed orders. Track money received, balance and delivery here.',`<button class="btn green" onclick="openQuoteForm({direct:true})">${ic('plus')}Direct Order</button>`)+dueBanner()+`
   <div class="grid g4 mb">${[['Total order value',inr(S.orders.reduce((a,o)=>a+total(o),0)),'#3B82F6'],['Money received',inr(S.payments.reduce((a,p)=>a+p.amount,0)),'#16A34A'],['Balance to collect',inr(S.orders.reduce((a,o)=>a+total(o)-paidOf(o.id),0)),'#D97706'],['In production',S.orders.filter(o=>orderStatus(o)==='In Production').length+' orders','#7C3AED']].map(x=>`<div class="card kpi" style="cursor:default"><div class="l">${x[0]}</div><div class="v tnum" style="color:${x[2]}">${x[1]}</div></div>`).join('')}</div>
   <div class="card"><div class="bar">${seg('ordMine',[[false,'All orders'],[true,'My orders']])}${fsearch('ordQ','Search order, customer or mobile…','ordRows')}${fsel('ordCat','All categories',CATS,'ordRows')}${fsel('ordSt','All statuses',['Confirmed','In Production','Ready for Delivery','Delivered'],'ordRows')}</div>
-  <div class="tw"><table><thead><tr><th>Order #</th><th>Customer</th><th>Category</th><th>From</th><th class="right">Total</th><th class="right">Paid</th><th class="right">Balance</th><th>Status</th><th>Date</th><th></th></tr></thead><tbody id="ordRows">${ordRows()}</tbody></table></div></div>`;
-function ordRows(){const q=UI.ordQ.toLowerCase();const me=ROLES[S.role];return S.orders.filter(o=>(!UI.ordMine||o.sales===me||S.role==='Admin')&&(!UI.ordCat||o.cat===UI.ordCat)&&(!UI.ordSt||orderStatus(o)===UI.ordSt)&&(!q||[o.id,o.cust,o.mobile,o.src].join(' ').toLowerCase().includes(q))).map(o=>{const t=total(o),p=paidOf(o.id);return`<tr class="click" onclick="viewOrder('${o.id}')"><td class="code b" style="font-size:13px">${o.id}</td><td><div class="who">${av(o.cust)}<div><b>${esc(o.cust)}</b><small>${esc(o.mobile||'')}</small></div></div></td><td>${o.cat}</td><td><span class="pill p-gray code">${o.src}</span></td><td class="right tnum b">${inr(t)}</td><td class="right tnum c-green">${inr(p)}</td><td class="right tnum b ${t-p>0?'c-amber':'c-green'}">${inr(t-p)}</td><td>${pill(orderStatus(o))}</td><td>${fmtD(o.date)}</td><td>${ic('eye','color:var(--pri)')}</td></tr>`}).join('')||emptyRow(10,'No orders match your filters','search-x')}
+  <div class="tw"><table><thead><tr><th>Order #</th><th>Customer</th><th>Category</th><th>From</th><th class="right">Total</th><th class="right">Paid</th><th class="right">Balance</th><th>Status</th><th>Ordered date</th><th>Delivery date</th><th></th></tr></thead><tbody id="ordRows">${ordRows()}</tbody></table></div></div>`;
+function ordRows(){const q=UI.ordQ.toLowerCase();const me=ROLES[S.role];return S.orders.filter(o=>(!UI.ordMine||o.sales===me||S.role==='Admin')&&(!UI.ordCat||o.cat===UI.ordCat)&&(!UI.ordSt||orderStatus(o)===UI.ordSt)&&(!q||[o.id,o.cust,o.mobile,o.src].join(' ').toLowerCase().includes(q))).map(o=>{const t=total(o),p=paidOf(o.id);return`<tr class="click" onclick="viewOrder('${o.id}')"><td class="code b" style="font-size:13px">${o.id}</td><td><div class="who">${av(o.cust)}<div><b>${esc(o.cust)}</b><small>${esc(o.mobile||'')}</small></div></div></td><td>${o.cat}</td><td><span class="pill p-gray code">${o.src}</span></td><td class="right tnum b">${inr(t)}</td><td class="right tnum c-green">${inr(p)}</td><td class="right tnum b ${t-p>0?'c-amber':'c-green'}">${inr(t-p)}</td><td>${pill(orderStatus(o))}</td><td>${fmtD(o.date)}</td><td>${o.delivered?`${fmtD(o.expected)} <span class="pill p-green">Delivered</span>`:`${fmtD(o.expected)} ${dueTag(orderDue(o))}`}</td><td>${ic('eye','color:var(--pri)')}</td></tr>`}).join('')||emptyRow(11,'No orders match your filters','search-x')}
+/* ---- click-to-sort table columns (every table in the page except .nosort) ---- */
+UI.sort={};
+const MON={Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
+function cellVal(td){if(!td)return'';if(td.dataset.v!==undefined)return isNaN(+td.dataset.v)?td.dataset.v:+td.dataset.v;
+  const inp=td.querySelector('input:not([type=checkbox])');const nm=td.querySelector('.who b');const t=(inp?inp.value:nm?nm.innerText:td.innerText).trim();
+  const d=t.match(/^(\d{1,2}) (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) (\d{4})/);if(d)return new Date(+d[3],MON[d[2]],+d[1]).getTime();
+  const n=t.match(/^[-−]?₹?\s?[\d,]+(\.\d+)?/);if(n&&/\d/.test(n[0]))return parseFloat(n[0].replace(/[₹,\s]/g,'').replace('−','-'));
+  return t.toLowerCase()}
+function cmpVal(a,b){if(typeof a==='number'&&typeof b==='number')return a-b;if(typeof a==='number')return -1;if(typeof b==='number')return 1;return String(a).localeCompare(String(b),'en',{numeric:true})}
+function applySort(){document.querySelectorAll('#view table:not(.nosort)').forEach(t=>{const ths=[...t.querySelectorAll('thead th')];if(!ths.length)return;
+  ths.forEach(th=>{if(th.dataset.l===undefined)th.dataset.l=th.textContent.trim()});
+  const key=UI.route+'|'+ths.map(th=>th.dataset.l).join('|');const s=UI.sort[key];
+  ths.forEach((th,ci)=>{if(!th.dataset.l)return;
+    if(!th.classList.contains('sortable')){th.classList.add('sortable');th.title='Click to sort';th.insertAdjacentHTML('beforeend','<span class="sarr"></span>');
+      th.onclick=()=>{const c=UI.sort[key];UI.sort[key]={c:ci,d:c&&c.c===ci&&c.d===1?-1:1};applySort()}}
+    const on=s&&s.c===ci;th.classList.toggle('sorted',!!on);th.querySelector('.sarr').textContent=on?(s.d===1?'▲':'▼'):'↕'});
+  const tb=t.tBodies[0];if(!s||!tb)return;
+  const all=[...tb.rows];const rows=all.filter(r=>r.cells.length>1&&!r.cells[0].querySelector('input,select'));const fixed=all.filter(r=>!rows.includes(r));
+  if(rows.length<2)return;rows.sort((a,b)=>cmpVal(cellVal(a.cells[s.c]),cellVal(b.cells[s.c]))*s.d).forEach(r=>tb.appendChild(r));fixed.forEach(r=>tb.appendChild(r))})}
+/* ---- delivery-date priority box on Orders ---- */
+function orderDue(o){if(o.delivered||!o.expected)return null;return daysBetween(todayISO(),o.expected)}
+const dueTag=d=>d==null?'':d<0?`<span class="pill p-red">Late by ${-d} day${d===-1?'':'s'}</span>`:d===0?'<span class="pill p-red">Due today</span>':d<=3?`<span class="pill p-amber">Due in ${d} day${d===1?'':'s'}</span>`:'';
+function dueList(){return S.orders.filter(o=>{const d=orderDue(o);return d!=null&&d<=3}).sort((a,b)=>a.expected.localeCompare(b.expected))}
+function dueBanner(){const list=dueList();if(!list.length)return'';
+  if(S.dueClosed===todayISO())return`<div class="mb small" style="text-align:right"><span class="link" onclick="S.dueClosed='';save();rerender()">${ic('alarm-clock','width:14px;height:14px;vertical-align:-2px')} Show delivery reminders (${list.length})</span></div>`;
+  return`<div class="card mb duebox"><div class="card-h"><h3>${ic('alarm-clock','color:var(--red)')}Priority – delivery due <span class="pill p-red">${list.length}</span></h3><button class="btn sm ghost" title="Hide for today" onclick="S.dueClosed=todayISO();save();rerender()">${ic('x')}Close</button></div>
+  <div class="card-b" style="padding-top:10px"><div class="small muted" style="margin-bottom:10px">Orders that are late, due today or due in the next 3 days. Tick <b>Done</b> when the order is delivered.</div>
+  ${list.map(o=>{const d=orderDue(o);return`<div class="duerow ${d<0?'late':d===0?'today':''}">
+    <label class="duechk" title="Tick when this order is delivered"><input type="checkbox" onchange="dueDone('${o.id}')"><span>Done</span></label>
+    <div class="who" style="flex:1;min-width:170px">${av(o.cust)}<div><b>${esc(o.cust)}</b><small>${o.id} · ${o.lines.length} item${o.lines.length>1?'s':''}</small></div></div>
+    <div><small class="muted">Delivery date</small><div class="b">${fmtD(o.expected)}</div></div>${dueTag(d)}
+    <div><small class="muted">Balance</small><div class="b c-amber tnum">${inr(total(o)-paidOf(o.id))}</div></div>
+    <button class="btn sm" onclick="viewOrder('${o.id}')">${ic('eye')}View</button></div>`}).join('')}</div></div>`}
+function dueDone(id){const o=order(id);o.delivered=true;(S.orderLog[id]=S.orderLog[id]||[]).unshift({at:nowISO(),msg:'Delivery marked done from the priority list'});audit(`Order ${id} marked done (delivered)`);save();rerender();toast(`${id} marked as done – status is now Delivered`)}
+function undoDelivered(id){const o=order(id);o.delivered=false;(S.orderLog[id]=S.orderLog[id]||[]).unshift({at:nowISO(),msg:'Delivered status undone'});audit(`Order ${id} delivered status undone`);save();viewOrder(id);rerender();toast('Delivered status removed','rotate-ccw')}
 function viewOrder(id){const o=order(id);if(!o)return;const t=total(o),p=paidOf(id),j=jobOfOrder(id),st=orderStatus(o);
   const mcost=j?j.cut.reduce((a,c)=>a+pieceCost(c)*(lineQty(j,c.item)),0):0;
   const pays=S.payments.filter(x=>x.order===id);const log=S.orderLog[id]||[];
@@ -922,7 +973,7 @@ function viewOrder(id){const o=order(id);if(!o)return;const t=total(o),p=paidOf(
   ${j&&j.cut.length?`<div class="sec"><h4>${ic('scissors','width:16px')}Cutting list · ${j.cut.length} pieces · ${inr(mcost)} material</h4>${cutTable(j,false)}</div>`:''}
   <div class="grid g2"><div class="sec"><h4>${ic('wallet','width:16px')}Payment history</h4>${pays.map(x=>`<div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--line2)"><div><b class="c-green">${inr(x.amount)}</b> via ${x.mode}<div class="small muted">${fmtDT(x.at)} · by ${esc(x.by)}</div></div><span class="code">${x.id}</span></div>`).join('')||'<div class="small muted">No payments yet</div>'}</div>
   <div class="sec"><h4>${ic('history','width:16px')}Activity</h4><div class="timeline">${log.map(e=>`<div class="ev">${esc(e.msg)}<small>${fmtDT(e.at)}</small></div>`).join('')||'<div class="small muted">No activity yet</div>'}</div></div></div>`,
-  `<button class="btn" style="margin-right:auto" onclick="printDoc('invoice','${o.id}')">${ic('printer')}View invoice</button>${st==='Ready for Delivery'?`<button class="btn" onclick="markDelivered('${o.id}')">${ic('truck')}Mark as delivered</button>`:''}${t-p>0&&allowed().some(k=>['billing','orders'].includes(k))?`<button class="btn green" onclick="recordPayment('${o.id}')">${ic('indian-rupee')}Record payment</button>`:''}`,'drawer')}
+  `<button class="btn" style="margin-right:auto" onclick="printDoc('invoice','${o.id}')">${ic('printer')}View invoice</button>${st==='Ready for Delivery'?`<button class="btn" onclick="markDelivered('${o.id}')">${ic('truck')}Mark as delivered</button>`:''}${o.delivered?`<button class="btn" onclick="undoDelivered('${o.id}')">${ic('rotate-ccw')}Undo delivered</button>`:''}${t-p>0&&allowed().some(k=>['billing','orders'].includes(k))?`<button class="btn green" onclick="recordPayment('${o.id}')">${ic('indian-rupee')}Record payment</button>`:''}`,'drawer')}
 function markDelivered(id){const o=order(id);o.delivered=true;(S.orderLog[id]=S.orderLog[id]||[]).unshift({at:nowISO(),msg:'Delivered to customer'});audit(`Order ${id} delivered`);save();viewOrder(id);rerender();toast('Marked as delivered 🚚')}
 const lineQty=(j,name)=>(j.items.find(i=>i.name===name)||{qty:1}).qty;
 
@@ -995,7 +1046,7 @@ PAGES.job=()=>{const j=job(UI.param);if(!j){UI.route='jobs';return PAGES.jobs()}
 function cutTable(j,edit){const groups={};j.cut.forEach((c,i)=>(groups[c.item]=groups[c.item]||[]).push([c,i]));let tv=0,tc=0;
   const rows=Object.entries(groups).map(([item,ps])=>{const q=lineQty(j,item);const gv=ps.reduce((a,[c])=>a+cft(c)*q,0),gc=ps.reduce((a,[c])=>a+pieceCost(c)*q,0);tv+=gv;tc+=gc;
    return`<tr style="background:var(--thbg)"><td colspan="5" class="b">${esc(item)} <span class="muted">×${q}</span></td><td class="right b tnum">${gv.toFixed(4)} cft</td><td class="right b tnum">${inr(gc)}</td>${edit?'<td></td>':''}</tr>`+ps.map(([c,i])=>{const m=mat(c.mat)||{};return`<tr><td style="padding-left:28px">${esc(c.piece)}</td><td class="small">${esc(m.name||'?')} <span class="muted">₹${m.price}/${m.unit}</span></td><td class="tnum">${c.L} ft × ${c.W} in × ${c.T} in</td><td class="right">${c.qty}</td><td class="right muted">×${q}</td><td class="right tnum">${(cft(c)*q).toFixed(4)}</td><td class="right tnum">${inr(pieceCost(c)*q)}</td>${edit?`<td class="right"><button class="btn sm ghost" onclick="S.jobs.find(x=>x.id==='${j.id}').cut.splice(${i},1);save();rerender()">${ic('trash-2','width:14px')}</button></td>`:''}</tr>`}).join('')}).join('');
-  return`<div class="card tw" style="box-shadow:none"><table><thead><tr><th>Piece</th><th>Material</th><th>Size (L × W × T)</th><th class="right">Qty</th><th class="right">Order</th><th class="right">Volume</th><th class="right">Cost</th>${edit?'<th></th>':''}</tr></thead><tbody>${rows}<tr><td colspan="5" class="b">PLANNED MATERIAL TOTAL</td><td class="right b tnum">${tv.toFixed(4)} cft</td><td class="right b tnum">${inr(tc)}</td>${edit?'<td></td>':''}</tr></tbody></table></div>`}
+  return`<div class="card tw" style="box-shadow:none"><table class="nosort"><thead><tr><th>Piece</th><th>Material</th><th>Size (L × W × T)</th><th class="right">Qty</th><th class="right">Order</th><th class="right">Volume</th><th class="right">Cost</th>${edit?'<th></th>':''}</tr></thead><tbody>${rows}<tr><td colspan="5" class="b">PLANNED MATERIAL TOTAL</td><td class="right b tnum">${tv.toFixed(4)} cft</td><td class="right b tnum">${inr(tc)}</td>${edit?'<td></td>':''}</tr></tbody></table></div>`}
 function addPiece(jid){const j=job(jid);const timber=S.materials.filter(m=>['Timber','Plywood'].includes(m.type));
   openModal('Add piece to cutting list',`<div class="form"><div class="fld full"><label>For which product?</label><select class="sel" id="p_item">${j.items.map(i=>`<option>${esc(i.name)}</option>`).join('')}</select></div>
   <div class="fld"><label>Piece name <em>*</em></label><input class="inp" id="p_name" placeholder="e.g. Leg, Top Plank"></div><div class="fld"><label>Material</label><select class="sel" id="p_mat">${timber.map(m=>`<option value="${m.id}">${esc(m.name)} · ₹${m.price}/${m.unit}</option>`).join('')}</select></div>
@@ -1068,7 +1119,7 @@ function attRows(){const d=UI.attDate,day=S.att[d]||{};const q=UI.attQ.toLowerCa
 function setAtt(wid,v){(S.att[UI.attDate]=S.att[UI.attDate]||{})[wid]=v;save();rerender()}
 function markAll(){const day=S.att[UI.attDate]=S.att[UI.attDate]||{};let n=0;S.workers.filter(w=>w.active).forEach(w=>{if(!day[w.id]){day[w.id]='P';n++}});save();rerender();toast(`${n} worker(s) marked Present`)}
 function attRegister(){const ym=UI.attDate.slice(0,7);const[y,m]=ym.split('-').map(Number);const days=new Date(y,m,0).getDate();const t=todayISO();
-  return`<div class="card"><div class="bar"><b>${new Date(y,m-1,1).toLocaleDateString('en-GB',{month:'long',year:'numeric'})}</b><span class="small muted">P = Present · H = Half day · A = Absent · grey = Sunday / not marked</span></div><div class="tw"><table class="reg"><thead><tr><th>Worker</th>${Array.from({length:days},(_,i)=>`<th style="padding:8px 2px;text-align:center">${i+1}</th>`).join('')}<th>P</th><th>H</th><th>A</th></tr></thead><tbody>
+  return`<div class="card"><div class="bar"><b>${new Date(y,m-1,1).toLocaleDateString('en-GB',{month:'long',year:'numeric'})}</b><span class="small muted">P = Present · H = Half day · A = Absent · grey = Sunday / not marked</span></div><div class="tw"><table class="reg nosort"><thead><tr><th>Worker</th>${Array.from({length:days},(_,i)=>`<th style="padding:8px 2px;text-align:center">${i+1}</th>`).join('')}<th>P</th><th>H</th><th>A</th></tr></thead><tbody>
   ${S.workers.filter(w=>w.active).map(w=>{const md=monthDays(w.id,ym);return`<tr><td>${esc(w.name)}</td>${Array.from({length:days},(_,i)=>{const dt=ym+'-'+pad(i+1,2);const v=(S.att[dt]||{})[w.id];return`<td>${dt>t?'':`<i class="${v||'S'}">${v||'·'}</i>`}</td>`}).join('')}<td class="b c-green">${md.p}</td><td class="b c-amber">${md.h}</td><td class="b c-red">${md.a}</td></tr>`}).join('')}</tbody></table></div></div>`}
 
 /* ---------- STAGES & TEMPLATES ---------- */
@@ -1120,7 +1171,7 @@ function setPay(wid,k,v){const pr=S.payroll[UI.payMonth]=S.payroll[UI.payMonth]|
 PAGES.settings=()=>modHead('settings','Add staff logins, choose what each role can see, and check who did what.',UI.setTab==='users'?`<button class="btn pri" onclick="editUser()">${ic('user-plus')}Create User</button>`:'')+
  tabs('setTab',[['users','Staff users'],['access','Who can see what'],['audit','Audit log']])+
  (UI.setTab==='users'?`<div class="card tw"><table><thead><tr><th>Name</th><th>Email</th><th>Mobile</th><th>Role</th><th>Status</th><th></th></tr></thead><tbody>${S.users.map(u=>`<tr class="click" onclick="editUser('${u.id}')"><td><div class="who">${av(u.name)}<b>${esc(u.name)}</b></div></td><td>${esc(u.email||'—')}</td><td>${esc(u.mobile||'—')}</td><td><b class="small">${u.role.toUpperCase()}</b>${u.cat?` <span class="pill p-green" style="font-size:11px">${u.cat}</span>`:''}</td><td>${pill(u.active?'Active':'Inactive')}</td><td>${ic('chevron-right','color:#B8C0D2')}</td></tr>`).join('')}</tbody></table></div>`
- :UI.setTab==='access'?`<div class="help">${ic('shield-check')}<div>Tick what each role can open. Try it: click your name at the top-right and choose “View the app as…”.</div></div><div class="card tw"><table class="matrix"><thead><tr><th>Menu</th>${Object.keys(ROLES).map(r=>`<th>${r}</th>`).join('')}</tr></thead><tbody>${MODS.map(m=>`<tr><td><div class="who"><span class="ico" style="background:${m[3]}22;color:${m[3]}">${ic(m[2])}</span><span class="lbl">${m[1]}</span></div></td>${Object.keys(ROLES).map(r=>`<td><input type="checkbox" ${S.perms[r].includes(m[0])?'checked':''} ${r==='Admin'||m[0]==='home'?'disabled':''} onchange="togglePerm('${r}','${m[0]}',this.checked)"></td>`).join('')}</tr>`).join('')}</tbody></table></div>`
+ :UI.setTab==='access'?`<div class="help">${ic('shield-check')}<div>Tick what each role can open. Try it: click your name at the top-right and choose “View the app as…”.</div></div><div class="card tw"><table class="matrix nosort"><thead><tr><th>Menu</th>${Object.keys(ROLES).map(r=>`<th>${r}</th>`).join('')}</tr></thead><tbody>${MODS.map(m=>`<tr><td><div class="who"><span class="ico" style="background:${m[3]}22;color:${m[3]}">${ic(m[2])}</span><span class="lbl">${m[1]}</span></div></td>${Object.keys(ROLES).map(r=>`<td><input type="checkbox" ${S.perms[r].includes(m[0])?'checked':''} ${r==='Admin'||m[0]==='home'?'disabled':''} onchange="togglePerm('${r}','${m[0]}',this.checked)"></td>`).join('')}</tr>`).join('')}</tbody></table></div>`
  :`<div class="card"><div class="card-b"><div class="timeline">${S.audit.map(e=>`<div class="ev">${esc(e.msg)}<small>${esc(e.by)} · ${fmtDT(e.at)}</small></div>`).join('')}</div></div></div>`);
 function togglePerm(r,m,on){const p=S.perms[r];if(on&&!p.includes(m))p.push(m);if(!on)S.perms[r]=p.filter(x=>x!==m);save();renderNav();toast('Access updated')}
 function editUser(id){const u=S.users.find(x=>x.id===id)||{role:'Supervisor',cat:'',active:true};openModal(id?'Edit User':'Create User',`<div class="form"><div class="fld"><label>Name <em>*</em></label><input class="inp" id="u_name" value="${esc(u.name||'')}"></div><div class="fld"><label>Mobile</label><input class="inp" id="u_mob" value="${esc(u.mobile||'')}"></div>
