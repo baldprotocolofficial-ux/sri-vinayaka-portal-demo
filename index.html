@@ -388,6 +388,13 @@ td.wrap{white-space:normal;min-width:220px}
 .ibtn,.btn{color:var(--ink)}
 .btn.pri,.btn.green{color:#fff}
 .btn.red{color:var(--red)}
+/* ---- Admin-only order number edit button ---- */
+.ono{display:flex;align-items:center;gap:6px}
+.editno{width:24px;height:24px;border-radius:6px;border:1px solid transparent;background:transparent;color:var(--muted);display:inline-grid;place-items:center;cursor:pointer;padding:0;flex:none;opacity:.55;transition:.12s}
+.editno svg{width:13px;height:13px}
+tr:hover .editno,.m-h .editno,.editno:focus-visible{opacity:1}
+.editno:hover{background:var(--pri-s);color:var(--pri);border-color:var(--line)}
+.m-h .editno{margin-left:2px}
 /* ---- brand logo tile in sidebar ---- */
 .logo-tile{width:38px;height:38px;border-radius:10px;background:#fff;display:grid;place-items:center;flex:none;box-shadow:0 1px 3px rgba(0,0,0,.25)}
 .logo-tile img{width:31px;height:31px;object-fit:contain;display:block}
@@ -941,7 +948,7 @@ PAGES.orders=()=>modHead('orders','All confirmed orders. Track money received, b
   <div class="grid g4 mb">${[['Total order value',inr(S.orders.reduce((a,o)=>a+total(o),0)),'#3B82F6'],['Money received',inr(S.payments.reduce((a,p)=>a+p.amount,0)),'#16A34A'],['Balance to collect',inr(S.orders.reduce((a,o)=>a+total(o)-paidOf(o.id),0)),'#D97706'],['In production',S.orders.filter(o=>orderStatus(o)==='In Production').length+' orders','#7C3AED']].map(x=>`<div class="card kpi" style="cursor:default"><div class="l">${x[0]}</div><div class="v tnum" style="color:${x[2]}">${x[1]}</div></div>`).join('')}</div>
   <div class="card"><div class="bar">${seg('ordMine',[[false,'All orders'],[true,'My orders']])}${fsearch('ordQ','Search order, customer or mobile…','ordRows')}${fsel('ordCat','All categories',CATS,'ordRows')}${fsel('ordSt','All statuses',['Confirmed','In Production','Ready for Delivery','Delivered'],'ordRows')}</div>
   <div class="tw"><table class="otable"><thead><tr><th>Order #</th><th>Customer</th><th class="right">Total</th><th class="right">Paid</th><th class="right">Balance</th><th>Status</th><th>Ordered date</th><th>Delivery date</th><th>Priority</th><th class="right" data-nosort style="padding-right:20px">Action</th></tr></thead><tbody id="ordRows">${ordRows()}</tbody></table></div></div>`;
-function ordRows(){const q=UI.ordQ.toLowerCase();const me=ROLES[S.role];return S.orders.filter(o=>(!UI.ordMine||o.sales===me||S.role==='Admin')&&(!UI.ordCat||o.cat===UI.ordCat)&&(!UI.ordSt||orderStatus(o)===UI.ordSt)&&(!q||[o.id,o.cust,o.mobile,o.src].join(' ').toLowerCase().includes(q))).map(o=>{const t=total(o),p=paidOf(o.id);return`<tr class="click" onclick="viewOrder('${o.id}')"><td><div class="code b" style="font-size:13px">${o.id}</div><small class="muted">${o.src==='DIRECT'?'Direct order':o.src}</small></td><td><div class="who">${av(o.cust)}<div><b>${esc(o.cust)}</b><small>${o.cat}${o.mobile?' · '+esc(o.mobile):''}</small></div></div></td><td class="right tnum b">${inr(t)}</td><td class="right tnum c-green">${inr(p)}</td><td class="right tnum b ${t-p>0?'c-amber':'c-green'}">${inr(t-p)}</td><td>${pill(orderStatus(o))}</td><td class="tnum">${fmtD(o.date)}</td><td class="tnum">${fmtD(o.expected)}</td>${prioCell(o)}<td class="right" style="padding-right:20px"><button class="ibtn vbtn" title="View order" onclick="event.stopPropagation();viewOrder('${o.id}')">${ic('eye')}</button></td></tr>`}).join('')||emptyRow(10,'No orders match your filters','search-x')}
+function ordRows(){const q=UI.ordQ.toLowerCase();const me=ROLES[S.role];return S.orders.filter(o=>(!UI.ordMine||o.sales===me||S.role==='Admin')&&(!UI.ordCat||o.cat===UI.ordCat)&&(!UI.ordSt||orderStatus(o)===UI.ordSt)&&(!q||[o.id,o.cust,o.mobile,o.src].join(' ').toLowerCase().includes(q))).map(o=>{const t=total(o),p=paidOf(o.id);return`<tr class="click" onclick="viewOrder('${o.id}')"><td><div class="ono"><span class="code b" style="font-size:13px">${o.id}</span>${S.role==='Admin'?`<button class="editno" title="Change order number (Admin only)" onclick="event.stopPropagation();editOrderNo('${o.id}')">${ic('pencil')}</button>`:''}</div><small class="muted">${o.src==='DIRECT'?'Direct order':o.src}</small></td><td><div class="who">${av(o.cust)}<div><b>${esc(o.cust)}</b><small>${o.cat}${o.mobile?' · '+esc(o.mobile):''}</small></div></div></td><td class="right tnum b">${inr(t)}</td><td class="right tnum c-green">${inr(p)}</td><td class="right tnum b ${t-p>0?'c-amber':'c-green'}">${inr(t-p)}</td><td>${pill(orderStatus(o))}</td><td class="tnum">${fmtD(o.date)}</td><td class="tnum">${fmtD(o.expected)}</td>${prioCell(o)}<td class="right" style="padding-right:20px"><button class="ibtn vbtn" title="View order" onclick="event.stopPropagation();viewOrder('${o.id}')">${ic('eye')}</button></td></tr>`}).join('')||emptyRow(10,'No orders match your filters','search-x')}
 /* Priority column: sorts by urgency (late first) */
 function prioCell(o){if(o.delivered)return`<td data-v="9999"><span class="pill p-green">${ic('check','width:12px;height:12px')}Delivered</span></td>`;const d=orderDue(o);
   if(d==null)return'<td data-v="9998"><span class="muted">—</span></td>';
@@ -965,6 +972,22 @@ function applySort(){document.querySelectorAll('#view table:not(.nosort)').forEa
   const tb=t.tBodies[0];if(!s||!tb)return;
   const all=[...tb.rows];const rows=all.filter(r=>r.cells.length>1&&!r.cells[0].querySelector('input,select'));const fixed=all.filter(r=>!rows.includes(r));
   if(rows.length<2)return;rows.sort((a,b)=>cmpVal(cellVal(a.cells[s.c]),cellVal(b.cells[s.c]))*s.d).forEach(r=>tb.appendChild(r));fixed.forEach(r=>tb.appendChild(r))})}
+/* ---- change order number (Admin only) ---- */
+function editOrderNo(id,fromDrawer){if(S.role!=='Admin')return toast('Only the Admin can change the order number','lock');const o=order(id);if(!o)return;
+  openModal('Change order number',`<div class="help warn">${ic('shield-alert')}<div>Only the Admin can do this. The new number will be updated everywhere – payments, workshop job, quotation link and history.</div></div>
+  <div class="form"><div class="fld"><label>Current number</label><input class="inp" value="${esc(id)}" disabled></div>
+  <div class="fld"><label>New order number <em>*</em></label><input class="inp" id="on_v" value="${esc(id)}" maxlength="20" style="text-transform:uppercase"><div class="hint">Letters, numbers, - or / only. Example: ORD000025</div></div></div>`,
+  `<button class="btn" onclick="closeModal()">Cancel</button><button class="btn pri" onclick="saveOrderNo('${id}',${!!fromDrawer})">${ic('check')}Save number</button>`);setTimeout(()=>{const e=$('#on_v');if(e){e.focus();e.select()}},60)}
+function saveOrderNo(old,fromDrawer){const nw=val('on_v').toUpperCase();
+  if(!nw)return toast('Please enter the new order number','alert-circle');
+  if(!/^[A-Z0-9][A-Z0-9\/-]{2,19}$/.test(nw))return toast('Use 3–20 letters, numbers, - or / only','alert-circle');
+  if(nw===old){closeModal();return}
+  if(S.orders.some(o=>o.id===nw))return toast(`${nw} is already used by another order`,'alert-circle');
+  const o=order(old);o.id=nw;
+  S.payments.forEach(p=>{if(p.order===old)p.order=nw});S.jobs.forEach(j=>{if(j.order===old)j.order=nw});S.quotations.forEach(q=>{if(q.order===old)q.order=nw});
+  S.orderLog[nw]=S.orderLog[old]||[];delete S.orderLog[old];S.orderLog[nw].unshift({at:nowISO(),msg:`Order number changed from ${old} to ${nw} by Admin`});
+  const m=nw.match(/^ORD(\d+)$/);if(m&&+m[1]>=S.seq.ord)S.seq.ord=+m[1]+1;
+  audit(`Order number changed from ${old} to ${nw}`);save();closeModal();rerender();toast(`Order number changed to ${nw}`);if(fromDrawer)setTimeout(()=>viewOrder(nw),80)}
 /* ---- delivery-date priority box on Orders ---- */
 function orderDue(o){if(o.delivered||!o.expected)return null;return daysBetween(todayISO(),o.expected)}
 const dueTag=d=>d==null?'':d<0?`<span class="pill p-red">Late by ${-d} day${d===-1?'':'s'}</span>`:d===0?'<span class="pill p-red">Due today</span>':d<=3?`<span class="pill p-amber">Due in ${d} day${d===1?'':'s'}</span>`:'';
@@ -985,7 +1008,7 @@ function viewOrder(id){const o=order(id);if(!o)return;const t=total(o),p=paidOf(
   const mcost=j?j.cut.reduce((a,c)=>a+pieceCost(c)*(lineQty(j,c.item)),0):0;
   const pays=S.payments.filter(x=>x.order===id);const log=S.orderLog[id]||[];
   const steps=[['Order confirmed',true],['In workshop',!!j&&j.items.some(i=>i.stage>0)],['Ready',st==='Ready for Delivery'||st==='Delivered'],['Delivered',st==='Delivered'],['Fully paid',p>=t]];
-  openModal(`${o.id} ${pill(st)}`,`
+  openModal(`${o.id}${S.role==='Admin'?`<button class="editno" title="Change order number (Admin only)" onclick="editOrderNo('${o.id}',true)">${ic('pencil')}</button>`:''} ${pill(st)}`,`
   <div class="small muted" style="margin:-6px 0 14px">Created ${fmtDT(o.date)} · ${o.src==='DIRECT'?'Direct order':'From quotation '+o.src}</div>
   <div class="mini mb"><div><small>Total amount</small><b class="tnum">${inr(t)}</b></div><div><small>Paid</small><b class="tnum c-green">${inr(p)}</b></div><div><small>Balance due</small><b class="tnum c-amber">${inr(t-p)}</b></div><div><small>Material cost</small><b class="tnum">${inr(mcost)}</b></div></div>
   <div class="card mb" style="box-shadow:none;padding:14px"><div class="track">${steps.map(s=>`<span class="${s[1]?'done':''}">${s[1]?ic('check'):''}${s[0]}</span>`).join(ic('chevron-right','width:14px;color:#B8C0D2;align-self:center'))}</div></div>
