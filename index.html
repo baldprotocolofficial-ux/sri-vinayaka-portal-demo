@@ -504,8 +504,8 @@ const title=s=>String(s||'').toLowerCase().replace(/\b\w/g,c=>c.toUpperCase());
 const val=id=>{const e=document.getElementById(id);return e?e.value.trim():''};
 const num=id=>parseFloat(val(id))||0;
 function toast(m,i='check-circle-2'){const t=$('#toast');t.innerHTML=ic(i)+esc(m);t.classList.add('show');lucide.createIcons();clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2600)}
-function openModal(t,body,foot='',cls=''){$('#ov').className='ov show'+(cls==='drawer'?' drawer':'');$('#modal').className='modal'+(cls==='wide'?' wide':'');$('#modal').innerHTML=`<div class="m-h"><h3>${t}</h3><button class="ibtn" onclick="closeModal()">${ic('x')}</button></div><div class="m-b">${body}</div>${foot?`<div class="m-f">${foot}</div>`:''}`;lucide.createIcons()}
-function closeModal(){$('#ov').className='ov'}
+function openModal(t,body,foot='',cls=''){$('#ov').className='ov show'+(cls==='drawer'?' drawer':'');$('#modal').className='modal'+(cls==='wide'?' wide':'');$('#modal').innerHTML=`<div class="m-h"><h3>${t}</h3><button class="ibtn" onclick="closeModal()">${ic('x')}</button></div><div class="m-b">${body}</div>${foot?`<div class="m-f">${foot}</div>`:''}`;lucide.createIcons();pushModal()}
+function closeModal(fromPop){const was=$('#ov').classList.contains('show');$('#ov').className='ov';if(!fromPop&&was&&modalPushed){modalPushed=false;pendingBack=true;history.back()}}
 function audit(msg){S.audit.unshift({at:nowISO(),by:ROLES[S.role],msg})}
 
 /* =========================================================
@@ -698,7 +698,16 @@ function resetDemo(){ask('Reset all demo data to the starting point? Your change
 let _askFn=null,_inFn=null;
 function ask(msg,fn,yes='Yes, delete'){_askFn=fn;openModal('Please confirm',`<div class="help warn">${ic('alert-triangle')}<div>${esc(msg)}</div></div>`,`<button class="btn" onclick="closeModal()">Cancel</button><button class="btn pri" onclick="closeModal();_askFn&&_askFn()">${yes}</button>`)}
 function askInput(t,label,v,fn,type='text'){_inFn=fn;openModal(t,`<div class="fld"><label>${label}</label><input class="inp" id="ai_v" type="${type}" style="width:100%" value="${esc(v??'')}"></div>`,`<button class="btn" onclick="closeModal()">Cancel</button><button class="btn pri" onclick="const v=val('ai_v');if(!v)return;closeModal();_inFn(v)">${ic('check')}Save</button>`);setTimeout(()=>$('#ai_v')?.focus(),50)}
-function nav(h){const p=String(h).replace(/^#/,'').split('/');UI.route=p[0]||'home';UI.param=p[1]||'';try{history.replaceState(null,'','#'+UI.route)}catch(e){}render()}
+/* ---- browser Back/Forward: every screen and pop-up is a history step ---- */
+let modalPushed=false,pendingBack=false,queuedNav=null,queuedModal=false;
+const curHash=()=>UI.route+(UI.param?'/'+UI.param:'');
+function nav(h){h=String(h).replace(/^#/,'')||'home';if(pendingBack){queuedNav=h;return}const same=h===curHash();const p=h.split('/');UI.route=p[0]||'home';UI.param=p[1]||'';try{same?history.replaceState({p:h},'','#'+h):history.pushState({p:h},'','#'+h)}catch(e){}document.body.classList.remove('navopen');render()}
+function pushModal(){if(modalPushed)return;if(pendingBack){queuedModal=true;return}try{history.pushState({m:1,p:curHash()},'','#'+curHash());modalPushed=true}catch(e){}}
+window.addEventListener('popstate',()=>{
+  if(pendingBack){pendingBack=false;if(queuedNav){const q=queuedNav;queuedNav=null;nav(q)}if(queuedModal){queuedModal=false;if($('#ov').classList.contains('show'))pushModal()}return}
+  document.body.classList.remove('navopen');document.querySelectorAll('.dd').forEach(d=>d.classList.remove('show'));
+  if($('#ov').classList.contains('show')){modalPushed=false;closeModal(true);if((location.hash.slice(1)||'home')!==curHash())route();return}
+  modalPushed=false;route()});
 document.addEventListener('click',e=>{const a=e.target.closest('a[href^="#"]');if(a){e.preventDefault();nav(a.getAttribute('href'))}},true);
 function globalSearch(q){const box=$('#sres');q=q.trim().toLowerCase();if(!q){box.classList.remove('show');return}
   const r=[];S.leads.forEach(l=>{if([l.name,l.mobile,l.id].join(' ').toLowerCase().includes(q))r.push(['target','Lead',l.name,l.id,`#leads`])});
@@ -707,7 +716,6 @@ function globalSearch(q){const box=$('#sres');q=q.trim().toLowerCase();if(!q){bo
   S.orders.forEach(o=>{if([o.cust,o.id,o.mobile].join(' ').toLowerCase().includes(q))r.push(['shopping-cart','Order',o.cust,o.id,`javascript:viewOrder('${o.id}')`])});
   S.jobs.forEach(j=>{if([j.id,j.order,order(j.order).cust].join(' ').toLowerCase().includes(q))r.push(['hammer','Job',order(j.order).cust,j.id,`#job/${j.id}`])});
   box.innerHTML=r.slice(0,10).map(x=>`<div class="r" onclick="${x[4].startsWith('javascript:')?x[4].slice(11):`nav('${x[4]}')`};$('#sres').classList.remove('show')">${ic(x[0],'color:var(--pri)')}<div><b>${esc(x[2])}</b><div class="small muted">${x[1]} · ${x[3]}</div></div></div>`).join('')||'<div class="empty">Nothing found</div>';box.classList.add('show');lucide.createIcons()}
-window.addEventListener('hashchange',route);
 function route(){const h=(location.hash.slice(1)||'home').split('/');UI.route=h[0];UI.param=h[1]||'';render()}
 function render(){const key=UI.route==='job'?'jobs':UI.route;if(!PAGES[UI.route]||!allowed().includes(key)){UI.route='home'}renderNav();$('#view').innerHTML=PAGES[UI.route]();lucide.createIcons();applySort();window.scrollTo(0,0)}
 function rerender(){renderNav();$('#view').innerHTML=PAGES[UI.route]();lucide.createIcons();applySort()}
@@ -1231,7 +1239,7 @@ addEventListener('resize',()=>{if(innerWidth>900)document.body.classList.remove(
    BOOT
    ========================================================= */
 if(document.documentElement.classList.contains('pre-collapsed'))document.body.classList.add('collapsed');
-route();paintThemeBtn();
+route();try{history.replaceState({p:curHash()},'','#'+curHash())}catch(e){}paintThemeBtn();
 </script>
 </body>
 </html>
